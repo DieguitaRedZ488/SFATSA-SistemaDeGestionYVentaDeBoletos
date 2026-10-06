@@ -522,7 +522,7 @@
 											"top": 206,
 											"width": 120,
 											"height": 26,
-											"text": "Mostrar error de campos vacios",
+											"text": "Mostrar error de campos Faltantes",
 											"wordWrap": true
 										},
 										{
@@ -1412,7 +1412,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Mostrar error de campos vacios",
+					"name": "Mostrar error de campos Faltantes",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",
@@ -1958,7 +1958,7 @@
 											"top": 166,
 											"width": 120,
 											"height": 26,
-											"text": "Mostrar error de campos vacios",
+											"text": "Mostrar error de campos Faltantes",
 											"wordWrap": true
 										},
 										{
@@ -3154,7 +3154,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGhD4xPLSQFK00="
 					},
-					"name": "Mostrar error de campos vacios",
+					"name": "Mostrar error de campos Faltantes",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",

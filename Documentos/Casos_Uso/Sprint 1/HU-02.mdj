@@ -1091,7 +1091,7 @@
 											"visible": false,
 											"font": "Arial;13;0",
 											"left": -336,
-											"top": -288,
+											"top": -304,
 											"height": 13
 										},
 										{
@@ -1102,10 +1102,10 @@
 											},
 											"font": "Arial;13;1",
 											"left": 819,
-											"top": 129,
+											"top": 121,
 											"width": 95,
 											"height": 39,
-											"text": "Mostrar error de campos vacios",
+											"text": "Mostrar error de campos Faltantes",
 											"wordWrap": true
 										},
 										{
@@ -1117,7 +1117,7 @@
 											"visible": false,
 											"font": "Arial;13;0",
 											"left": -336,
-											"top": -288,
+											"top": -304,
 											"width": 182.0380859375,
 											"height": 13,
 											"text": "(from Model1)"
@@ -1131,14 +1131,14 @@
 											"visible": false,
 											"font": "Arial;13;0",
 											"left": -336,
-											"top": -288,
+											"top": -304,
 											"horizontalAlignment": 1,
 											"wordWrap": true
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 814,
-									"top": 122,
+									"top": 114,
 									"width": 105,
 									"height": 51,
 									"stereotypeLabel": {
@@ -1166,7 +1166,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -168,
-									"top": -144,
+									"top": -152,
 									"width": 10,
 									"height": 10
 								},
@@ -1182,7 +1182,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -168,
-									"top": -144,
+									"top": -152,
 									"width": 10,
 									"height": 10
 								},
@@ -1198,7 +1198,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -168,
-									"top": -144,
+									"top": -152,
 									"width": 10,
 									"height": 10
 								},
@@ -1214,7 +1214,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -168,
-									"top": -144,
+									"top": -152,
 									"width": 10,
 									"height": 10
 								},
@@ -1230,7 +1230,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -168,
-									"top": -144,
+									"top": -152,
 									"width": 10,
 									"height": 10
 								}
@@ -1238,7 +1238,7 @@
 							"font": "Arial;13;0",
 							"containerChangeable": true,
 							"left": 792,
-							"top": 112,
+							"top": 104,
 							"width": 149,
 							"height": 72,
 							"nameCompartment": {
@@ -1284,8 +1284,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 669,
-									"top": 154,
+									"left": 670,
+									"top": 150,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -1304,8 +1304,8 @@
 										"$ref": "AAAAAAGhCVQxgSOuZjg="
 									},
 									"font": "Arial;13;0",
-									"left": 643,
-									"top": 169,
+									"left": 644,
+									"top": 165,
 									"width": 53.49169921875,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -1327,8 +1327,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 670,
-									"top": 125,
+									"left": 669,
+									"top": 121,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -1346,7 +1346,7 @@
 								"$ref": "AAAAAAGhCVOx2yNdqBE="
 							},
 							"lineStyle": 1,
-							"points": "791:147;550:145",
+							"points": "791:140;550:144",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAGhCVQxgyOxpsQ="
@@ -2044,7 +2044,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGhCU1vhiHqcc8="
 					},
-					"name": "Mostrar error de campos vacios",
+					"name": "Mostrar error de campos Faltantes",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",
@@ -3453,7 +3453,7 @@
 											"visible": false,
 											"font": "Arial;13;0",
 											"left": -112,
-											"top": -560,
+											"top": -576,
 											"height": 13
 										},
 										{
@@ -3464,10 +3464,10 @@
 											},
 											"font": "Arial;13;1",
 											"left": 797,
-											"top": 78,
+											"top": 73,
 											"width": 103,
-											"height": 26,
-											"text": "Mostrar error de campos vacios",
+											"height": 39,
+											"text": "Mostrar error de campos Faltantes",
 											"wordWrap": true
 										},
 										{
@@ -3479,7 +3479,7 @@
 											"visible": false,
 											"font": "Arial;13;0",
 											"left": -112,
-											"top": -560,
+											"top": -576,
 											"width": 80.9072265625,
 											"height": 13,
 											"text": "(from Model1)"
@@ -3493,16 +3493,16 @@
 											"visible": false,
 											"font": "Arial;13;0",
 											"left": -112,
-											"top": -560,
+											"top": -576,
 											"horizontalAlignment": 1,
 											"wordWrap": true
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 792,
-									"top": 71,
+									"top": 66,
 									"width": 113,
-									"height": 38,
+									"height": 51,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGhCWOwqm1YciE="
 									},
@@ -3528,7 +3528,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -56,
-									"top": -280,
+									"top": -288,
 									"width": 10,
 									"height": 10
 								},
@@ -3544,7 +3544,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -56,
-									"top": -280,
+									"top": -288,
 									"width": 10,
 									"height": 10
 								},
@@ -3560,7 +3560,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -56,
-									"top": -280,
+									"top": -288,
 									"width": 10,
 									"height": 10
 								},
@@ -3576,7 +3576,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -56,
-									"top": -280,
+									"top": -288,
 									"width": 10,
 									"height": 10
 								},
@@ -3592,7 +3592,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": -56,
-									"top": -280,
+									"top": -288,
 									"width": 10,
 									"height": 10
 								}
@@ -3600,9 +3600,9 @@
 							"font": "Arial;13;0",
 							"containerChangeable": true,
 							"left": 768,
-							"top": 64,
+							"top": 56,
 							"width": 161,
-							"height": 53,
+							"height": 72,
 							"nameCompartment": {
 								"$ref": "AAAAAAGhCWOwqm1XujY="
 							},
@@ -3647,7 +3647,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 676,
-									"top": 98,
+									"top": 99,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -3667,7 +3667,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 650,
-									"top": 113,
+									"top": 114,
 									"width": 53.49169921875,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -3690,7 +3690,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 677,
-									"top": 68,
+									"top": 69,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -3708,7 +3708,7 @@
 								"$ref": "AAAAAAGhCWOwqm1WdBs="
 							},
 							"lineStyle": 1,
-							"points": "767:90;588:89",
+							"points": "767:91;588:90",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAGhCWQH5W2k9aA="
@@ -3825,7 +3825,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGhCU1vhiHqcc8="
 					},
-					"name": "Mostrar error de campos vacios",
+					"name": "Mostrar error de campos Faltantes",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",

@@ -936,10 +936,10 @@
 											},
 											"font": "Arial;13;1",
 											"left": 709.5,
-											"top": 230,
+											"top": 233,
 											"width": 106,
-											"height": 26,
-											"text": "Mostrar error de campos vacios",
+											"height": 39,
+											"text": "Mostrar error de campos Faltantes",
 											"wordWrap": true
 										},
 										{
@@ -972,9 +972,9 @@
 									],
 									"font": "Arial;13;0",
 									"left": 704.5,
-									"top": 223,
+									"top": 226,
 									"width": 116,
-									"height": 38,
+									"height": 51,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAGhD0yi7Hf8r8g="
 									},
@@ -1074,7 +1074,7 @@
 							"left": 680,
 							"top": 216,
 							"width": 165,
-							"height": 53,
+							"height": 72,
 							"nameCompartment": {
 								"$ref": "AAAAAAGhD0yi7Hf7rZU="
 							},
@@ -1757,7 +1757,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Mostrar error de campos vacios",
+					"name": "Mostrar error de campos Faltantes",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",
@@ -2295,7 +2295,7 @@
 											"top": 174,
 											"width": 112,
 											"height": 26,
-											"text": "Mostrar error de campos vacios",
+											"text": "Mostrar error de campos Faltantes",
 											"wordWrap": true
 										},
 										{
@@ -3491,7 +3491,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGhD0r04nchgH8="
 					},
-					"name": "Mostrar error de campos vacios",
+					"name": "Mostrar error de campos Faltantes",
 					"ownedElements": [
 						{
 							"_type": "UMLExtend",
