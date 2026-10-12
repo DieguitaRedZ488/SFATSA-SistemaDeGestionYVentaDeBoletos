@@ -1,10 +1,10 @@
 # Apache local en Windows con XAMPP
 
-Esta guía reproduce el entorno de desarrollo de SFATSA por HTTP. No implementa funcionalidades, crea tablas ni configura una conexión PDO. MariaDB 12.0 fue identificada como servidor independiente en el equipo de referencia; no iniciar MySQL desde el panel de XAMPP.
+Esta guía reproduce el entorno de desarrollo de SFATSA por HTTP. Las funcionalidades del Sprint 1 todavía no están implementadas; esta guía no crea tablas. MariaDB 12.0.2 funciona como servicio independiente de XAMPP. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB, y la autenticación desde CMD está comprobada. No iniciar MySQL desde XAMPP. La [guía PDO](conexion-pdo-local.md) documenta la infraestructura PHP y la conexión CLI comprobada.
 
 ## Estado confirmado en el equipo de referencia
 
-El usuario confirmó que Apache fue reiniciado, el VirtualHost está activo y el archivo hosts contiene `127.0.0.1 sfatsa.test`. PHP 8.2.12 y Apache 2.4.58 son las versiones locales informadas, sin establecer mínimos para el proyecto. No hay HTTPS propio de SFATSA ni una conexión PDO probada desde la aplicación.
+El usuario confirmó que Apache fue reiniciado, el VirtualHost está activo y el archivo hosts contiene `127.0.0.1 sfatsa.test`. PHP 8.2.12 y Apache 2.4.58 son las versiones locales informadas, sin establecer mínimos para el proyecto. No hay HTTPS propio de SFATSA. La conexión PHP–PDO–MariaDB fue comprobada por CLI con `database/check-connection.php`, seleccionando `sfatza` y ejecutando únicamente `SELECT 1`, con código de salida 0. La integración PDO con solicitudes HTTP sigue pendiente y los permisos efectivos sobre tablas mediante PDO no están comprobados. El sitio conserva HTTP 200 y su mensaje de preparación sin cargar conexiones desde la página.
 
 Validaciones ejecutadas por el agente: `httpd.exe -t` devolvió `Syntax OK` y código 0; `httpd.exe -S` devolvió código 0, con `localhost` predeterminado y `sfatsa.test` en puerto 80. El puerto 443 conserva el sitio SSL existente de XAMPP.
 
@@ -198,7 +198,7 @@ No compartir logs sin revisar si contienen información sensible. No sustituir l
 
 ## Archivos que no deben versionarse
 
-Los archivos reales de Apache y hosts, sus respaldos, certificados privados, logs y credenciales deben permanecer fuera del repositorio. Versionar únicamente esta guía y ejemplos sin secretos. `.env.example` contiene valores ilustrativos; no confirma una base de datos existente ni carga variables en PHP. No copiar credenciales a la plantilla, README o MEMORY.
+Los archivos reales de Apache y hosts, sus respaldos, certificados privados, logs y credenciales deben permanecer fuera del repositorio. Versionar únicamente documentación y ejemplos sin secretos. `.env.example` contiene valores locales no secretos y credenciales vacías; el lector `config/Environment.php` permite cargar un `.env` privado sin crearlo automáticamente. No copiar credenciales a la plantilla, README o MEMORY.
 
 ## Referencias
 

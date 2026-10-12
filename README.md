@@ -8,11 +8,11 @@ SFATSA es el Sistema de Gestión y Venta de Boletos. La documentación contempla
 
 ## Estado actual
 
-El proyecto se encuentra en planificación y configuración inicial, sin funcionalidades ni tablas creadas para la aplicación. `Index.html` conserva una página de prueba; la entrada web local es `public/index.php`, que muestra «SFATSA está en preparación.».
+El proyecto se encuentra en planificación y configuración inicial; las funcionalidades del Sprint 1 todavía no están implementadas. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB. Esta infraestructura no crea ni altera su estructura. `Index.html` conserva una página de prueba; la entrada web local es `public/index.php`, que muestra «SFATSA está en preparación.».
 
 El VirtualHost `sfatsa.test` está activo en el equipo de referencia y funciona por HTTP en Chrome y curl. Se comprobaron el bloqueo de `/phpmyadmin/`, la protección de `AGENTS.md` y `MEMORY.md` en las rutas probadas, la redirección habitual de `localhost/` a `/dashboard/` y un 404 en `/icons.svg`. Estas comprobaciones no cubren todas las rutas ni variantes de seguridad. HTTPS propio de SFATSA no está configurado.
 
-Consulta la [guía de configuración local de Apache](docs/configuracion-apache-local.md) para reproducir el entorno y realizar tus propias verificaciones. MariaDB 12.0 se ejecuta de forma independiente; no debe iniciarse MySQL de XAMPP. Todavía no se ha probado una conexión PDO desde SFATSA, ni existen migraciones o un cargador de variables de entorno.
+Consulta la [guía de configuración local de Apache](docs/configuracion-apache-local.md) para reproducir el entorno. MariaDB 12.0.2 funciona como servicio independiente de XAMPP; no debe iniciarse MySQL de XAMPP. La autenticación desde CMD está comprobada. La conexión PHP–PDO–MariaDB también fue comprobada mediante `database/check-connection.php`: seleccionó `sfatza`, ejecutó únicamente `SELECT 1` y terminó con código de salida 0. El sitio conserva HTTP 200 y su mensaje de preparación, sin cargar conexiones desde la página. La integración PDO con solicitudes HTTP sigue pendiente y los permisos efectivos sobre tablas mediante PDO no están comprobados. La [guía PDO](docs/conexion-pdo-local.md) distingue estos resultados de las pruebas recomendadas para otros equipos. No hay migraciones implementadas.
 
 ## Tecnologías y arquitectura acordadas
 
@@ -30,6 +30,7 @@ Estas decisiones están recogidas en [AGENTS.md](AGENTS.md) y [docs/constitution
 | [AGENTS.md](AGENTS.md) | Instrucciones de trabajo, convenciones y límites para agentes. |
 | [docs/constitution.md](docs/constitution.md) | Ocho principios que rigen el desarrollo. |
 | [docs/configuracion-apache-local.md](docs/configuracion-apache-local.md) | Configuración de Windows y XAMPP, seguridad, validación y pruebas locales. |
+| [docs/conexion-pdo-local.md](docs/conexion-pdo-local.md) | Variables privadas, fábrica PDO y comprobación CLI de solo lectura. |
 | [Documentos/Historias_Usuario.docx](Documentos/Historias_Usuario.docx) | Once historias de usuario y sus prioridades. |
 | [Documentos/Historias_Descripciones.docx](Documentos/Historias_Descripciones.docx) | Descripciones, requisitos y criterios de aceptación. |
 | [Documentos/Product_Backlog.docx](Documentos/Product_Backlog.docx) | Planificación, dependencias y estimaciones de las historias. |
@@ -42,8 +43,8 @@ Antes de implementar, consultar la constitución y la documentación del sprint 
 
 | Componente | Requisito conocido | Pendiente de verificar |
 | --- | --- | --- |
-| PHP | Versión local informada: 8.2.12; PDO y `pdo_mysql` acordados. | Versión objetivo y conexión PDO desde SFATSA. |
-| MariaDB | Servidor independiente 12.0 identificado; puerto local informado: 3306. | Versión objetivo y conexión desde la aplicación. |
+| PHP | Versión local 8.2.12; conexión PDO por CLI comprobada. | Versión objetivo e integración PDO con solicitudes HTTP. |
+| MariaDB | Servicio independiente 12.0.2; `sfatza` con 15 tablas, incluida `reembolso`, verificadas previamente con el cliente según confirmación del usuario. | Permisos efectivos sobre tablas mediante PDO. |
 | Servidor web | Apache de XAMPP; versión local informada: 2.4.58; `sfatsa.test` activo por HTTP. | Reproducir y validar en cada equipo; HTTPS propio pendiente. |
 | Bootstrap | Versión principal 5. | Versión específica y forma de incorporación. |
 | Navegador | Soporte de HTML5, CSS3 y JavaScript. | Navegadores y versiones que se validarán. |
@@ -54,12 +55,12 @@ Los datos anteriores describen el equipo de referencia y no establecen versiones
 
 - `.gitignore` excluye entornos con secretos, dependencias, temporales, logs y cachés, y conserva `.env.example` como archivo versionable.
 - `.editorconfig` declara UTF-8, LF, salto de línea final, eliminación de espacios al final y sangría de 4 espacios para PHP y 2 para HTML, CSS, JavaScript, JSON, YAML y Markdown. Sus reglas dependen del soporte del editor y no se han aplicado automáticamente a archivos existentes.
-- `.env.example` contiene valores ilustrativos para el entorno local, la aplicación y MariaDB. El puerto, la URL y el nombre de base de datos no confirman una configuración existente. Usuario y contraseña están vacíos. La plantilla no crea una base de datos ni establece una conexión; su carga todavía no está implementada.
+- `.env.example` contiene la URL local y la base `sfatza`; usuario y contraseña permanecen vacíos. El lector estricto está en `config/Environment.php`. No se crea `.env` automáticamente, ni una base de datos. Ejecutar `tests/pdo-infrastructure.php` para validar con datos ficticios; reservar `database/check-connection.php` para una prueba autorizada después de configurar las credenciales localmente.
 
 ## Colaboración con Git y ramas
 
 1. Comprobar la rama activa y el estado del repositorio antes de editar; revisar y respetar los cambios existentes.
-2. Trabajar en una rama acordada. La configuración local de Apache y su documentación se preparan en `chore/configuracion-apache-local`.
+2. Trabajar en una rama acordada. La infraestructura PDO se prepara en `chore/conexion-pdo-mariadb`; la documentación de Apache fue integrada mediante el PR #3.
 3. Consultar las instrucciones, la constitución y los documentos del sprint; mantener trazabilidad con historias, casos de uso, tareas y pruebas.
 4. Preparar cambios pequeños y revisables, siguiendo las convenciones del proyecto y utilizando español en documentación e interfaz.
 5. Verificar el formato y ejecutar las pruebas pertinentes antes de integrar; presentar resultados y limitaciones para revisión.
