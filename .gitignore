@@ -1,0 +1,21 @@
+# Entornos locales y secretos; conservar la plantilla versionable.
+.env
+.env.*
+!.env.example
+
+# Dependencias instaladas.
+vendor/
+node_modules/
+
+# Archivos temporales del editor.
+*.swp
+*.swo
+*~
+*.tmp
+*.temp
+
+# Logs y cachés locales.
+*.log
+/logs/
+/cache/
+/.cache/
