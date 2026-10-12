@@ -8,6 +8,7 @@ El stack establecido es PHP, MariaDB, PDO, HTML5, CSS3, Bootstrap 5 y JavaScript
 
 ## Arquitectura y consulta previa
 
+- Al comenzar una tarea, consultar `MEMORY.md` para conocer decisiones y estado del proyecto; no sustituye las especificaciones aprobadas. Cuando cambien decisiones importantes, proponer su actualización sin modificarlo automáticamente.
 - Utilizar una arquitectura de tres capas: presentación, lógica de negocio y acceso a datos.
 - Aplicar el patrón MVC: vistas para la presentación, controladores para coordinar solicitudes y modelos para representar el dominio.
 - Encapsular las reglas de negocio en servicios y el acceso a datos en repositorios mediante PDO.
