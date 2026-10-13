@@ -66,3 +66,9 @@ Desktop.ini
 .vscode/*.code-workspace
 .idea/
 *.code-workspace
+
+# Configuracion privada de agentes de IA; conservarla solo en cada equipo.
+/AGENTS.md
+/MEMORY.md
+/.agents/
+/docs/constitution.md

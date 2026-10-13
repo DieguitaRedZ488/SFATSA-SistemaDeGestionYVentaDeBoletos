@@ -8,11 +8,11 @@ SFATSA es el Sistema de Gestión y Venta de Boletos. La documentación contempla
 
 ## Estado actual
 
-El código implementa la infraestructura MVC del Sprint 1, autenticación/login, gestión de usuarios (HU-01) y gestión de conductores (HU-03). La aplicación usa la base existente `sfatza`; no incluye un volcado ni un script completo para crear todas las tablas desde una base vacía. El aprovisionamiento/restauración inicial del esquema debe coordinarse con el responsable de base de datos.
+El código implementa la infraestructura MVC del Sprint 1, autenticación/login, gestión de usuarios (HU-01) y gestión de conductores (HU-03). La aplicación local debe configurarse de acuerdo con la guía de instalación y con autorización del responsable de base de datos. `database/install.sql` prepara el esquema completo para una instalación nueva; no es una migración y no debe ejecutarse sobre una base existente.
 
 La migración 20261013_001 de nombres/apellidos se reportó aplicada y verificada manualmente por el usuario. La migración 20261013_002 para `conductor.numero_licencia NOT NULL` está preparada y **no aplicada**; no ejecutar sin autorización, respaldo y precondiciones. Véase el [README de migraciones](database/migrations/README.md).
 
-La implementación del Sprint 1 y sus límites/pruebas se describen en la documentación técnica del [Sprint 1](docs/sprints/sprint-01/plan.md). Para configurar una computadora nueva, comenzar por la [guía de instalación Windows/XAMPP](docs/instalacion-windows-xampp.md). También están disponibles las guías de [Apache](docs/configuracion-apache-local.md), [PDO](docs/conexion-pdo-local.md), [administrador inicial](docs/administrador-inicial.md), [usuarios](docs/gestion-usuarios.md), [conductores](docs/gestion-conductores.md) y [login](docs/login-mvc.md).
+La implementación vigente y las guías para desarrolladores están en la [documentación técnica](docs/05-documentacion-tecnica/README.md). Para configurar una computadora nueva, comenzar por la [guía de instalación Windows/XAMPP](docs/05-documentacion-tecnica/general/instalacion-windows-xampp.md). También están disponibles las guías de [Apache](docs/05-documentacion-tecnica/general/configuracion-apache-local.md), [PDO](docs/05-documentacion-tecnica/general/conexion-pdo-local.md), [administrador inicial](docs/05-documentacion-tecnica/general/administrador-inicial.md), [usuarios](docs/05-documentacion-tecnica/general/gestion-usuarios.md), [conductores](docs/05-documentacion-tecnica/general/gestion-conductores.md) y [login](docs/05-documentacion-tecnica/general/login-mvc.md).
 
 ## Tecnologías y arquitectura acordadas
 
@@ -21,24 +21,20 @@ La implementación del Sprint 1 y sus límites/pruebas se describen en la docume
 - Arquitectura de tres capas: presentación, lógica de negocio y acceso a datos.
 - Patrón MVC, con servicios para las reglas de negocio y repositorios para el acceso a datos mediante PDO.
 
-Estas decisiones están recogidas en [AGENTS.md](AGENTS.md) y [docs/constitution.md](docs/constitution.md). Composer solo podrá utilizarse si existe una necesidad justificada y aprobada; no hay dependencias instaladas como parte de esta configuración.
+Composer solo podrá utilizarse si existe una necesidad justificada y aprobada; no hay dependencias instaladas como parte de esta configuración.
 
 ## Organización documental
 
+La documentación del proyecto está agrupada por propósito:
+
 | Ubicación | Contenido |
 | --- | --- |
-| [AGENTS.md](AGENTS.md) | Instrucciones de trabajo, convenciones y límites para agentes. |
-| [docs/constitution.md](docs/constitution.md) | Ocho principios que rigen el desarrollo. |
-| [docs/configuracion-apache-local.md](docs/configuracion-apache-local.md) | Configuración de Windows y XAMPP, seguridad, validación y pruebas locales. |
-| [docs/conexion-pdo-local.md](docs/conexion-pdo-local.md) | Variables privadas, fábrica PDO y comprobación CLI de solo lectura. |
-| [docs/instalacion-windows-xampp.md](docs/instalacion-windows-xampp.md) | Preparación en otra computadora, límites del esquema disponible y acceso a la aplicación. |
-| [Documentos/Historias_Usuario.docx](Documentos/Historias_Usuario.docx) | Once historias de usuario y sus prioridades. |
-| [Documentos/Historias_Descripciones.docx](Documentos/Historias_Descripciones.docx) | Descripciones, requisitos y criterios de aceptación. |
-| [Documentos/Product_Backlog.docx](Documentos/Product_Backlog.docx) | Planificación, dependencias y estimaciones de las historias. |
-| [Documentos/Sprint_Backlog.docx](Documentos/Sprint_Backlog.docx) | Tareas, responsables y estimaciones por sprint. |
-| [Documentos/Casos_Uso/](Documentos/Casos_Uso/) | Modelos UML `.mdj` organizados en carpetas de Sprint 1 a Sprint 6. |
-
-Antes de implementar, consultar la constitución y la documentación del sprint correspondiente. Las diferencias de denominación, asignación a sprints o estimaciones entre documentos deben aclararse antes de implementar el comportamiento afectado. No modificar `Documentos/`, modelos de datos ni especificaciones aprobadas sin autorización.
+| [01 — Gestión del proyecto](docs/01-gestion-del-proyecto/) | Product Backlog y Sprint Backlog general, copiados de los documentos fuente indicados por el equipo. |
+| [02 — Documentación por sprint](docs/02-documentacion-por-sprint/) | Entregables por sprint: backlog, historia, casos de uso, diagramas de secuencia y wireframes disponibles. La distribución de HU-02 a HU-11 sigue la asignación definitiva solicitada. |
+| [03 — Documentación general](docs/03-documentacion-general/) | Reporte final del proyecto. |
+| [04 — Análisis y diseño global](docs/04-analisis-y-diseno-global/) | Diagramas globales de clases, componentes y modelo relacional. |
+| [05 — Documentación técnica](docs/05-documentacion-tecnica/README.md) | Instalación, guías operativas y documentación técnica del Sprint 1; no sustituye los entregables académicos. |
+Los diagramas StarUML `.mdj` se conservan en formato editable. Las copias académicas anteriores fueron retiradas del repositorio por estar desactualizadas; los entregables vigentes están en `docs/01-gestion-del-proyecto/` y `docs/02-documentacion-por-sprint/`. Los documentos técnicos de implementación se mantienen separados de los backlogs académicos. La distribución documental no altera la planificación ni la especificación del proyecto.
 
 ## Entorno y versiones pendientes
 
@@ -62,7 +58,7 @@ Los datos anteriores describen el equipo de referencia y no establecen versiones
 
 1. Comprobar la rama activa y el estado del repositorio antes de editar; revisar y respetar los cambios existentes.
 2. Trabajar en una rama acordada. La infraestructura PDO se prepara en `chore/conexion-pdo-mariadb`; la documentación de Apache fue integrada mediante el PR #3.
-3. Consultar las instrucciones, la constitución y los documentos del sprint; mantener trazabilidad con historias, casos de uso, tareas y pruebas.
+3. Consultar los entregables del sprint y la documentación técnica correspondiente; mantener trazabilidad con historias, casos de uso, tareas y pruebas.
 4. Preparar cambios pequeños y revisables, siguiendo las convenciones del proyecto y utilizando español en documentación e interfaz.
 5. Verificar el formato y ejecutar las pruebas pertinentes antes de integrar; presentar resultados y limitaciones para revisión.
 6. Solicitar autorización antes de instalar herramientas o dependencias y antes de realizar commits, push o merges. No versionar secretos.
