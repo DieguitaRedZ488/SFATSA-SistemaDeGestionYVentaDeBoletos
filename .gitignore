@@ -13,9 +13,56 @@ node_modules/
 *~
 *.tmp
 *.temp
+*.cache
+*.pid
+/tmp/
 
 # Logs y cachés locales.
 *.log
 /logs/
 /cache/
 /.cache/
+
+# Respaldos y bases de datos locales; no ignorar migraciones ni SQL fuente.
+*.sql.gz
+*.sql.zip
+*backup*.sql
+*respaldo*.sql
+*dump*.sql
+*.sql.bak
+*.sql.backup
+*.sql.old
+*.sql~
+*.dump
+*.dump.*
+*.bak
+*.bak-*
+*.backup
+*.backup-*
+*.sqlite
+*.sqlite3
+*.db
+
+# Secretos y llaves privadas locales.
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+*-service-account*.json
+*_service_account.json
+**/credentials.local.*
+**/secrets.local.*
+
+# Archivos del sistema operativo.
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Preferencias locales de editores/IDE; conservar configuraciones compartidas.
+.vscode/settings.json
+.vscode/launch.json
+.vscode/*.code-workspace
+.idea/
+*.code-workspace

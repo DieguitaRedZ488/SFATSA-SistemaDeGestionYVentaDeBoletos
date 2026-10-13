@@ -8,11 +8,11 @@ SFATSA es el Sistema de Gestión y Venta de Boletos. La documentación contempla
 
 ## Estado actual
 
-El proyecto se encuentra en planificación y configuración inicial; las funcionalidades del Sprint 1 todavía no están implementadas. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB. Esta infraestructura no crea ni altera su estructura. `Index.html` conserva una página de prueba; la entrada web local es `public/index.php`, que muestra «SFATSA está en preparación.».
+El código implementa la infraestructura MVC del Sprint 1, autenticación/login, gestión de usuarios (HU-01) y gestión de conductores (HU-03). La aplicación usa la base existente `sfatza`; no incluye un volcado ni un script completo para crear todas las tablas desde una base vacía. El aprovisionamiento/restauración inicial del esquema debe coordinarse con el responsable de base de datos.
 
-El VirtualHost `sfatsa.test` está activo en el equipo de referencia y funciona por HTTP en Chrome y curl. Se comprobaron el bloqueo de `/phpmyadmin/`, la protección de `AGENTS.md` y `MEMORY.md` en las rutas probadas, la redirección habitual de `localhost/` a `/dashboard/` y un 404 en `/icons.svg`. Estas comprobaciones no cubren todas las rutas ni variantes de seguridad. HTTPS propio de SFATSA no está configurado.
+La migración 20261013_001 de nombres/apellidos se reportó aplicada y verificada manualmente por el usuario. La migración 20261013_002 para `conductor.numero_licencia NOT NULL` está preparada y **no aplicada**; no ejecutar sin autorización, respaldo y precondiciones. Véase el [README de migraciones](database/migrations/README.md).
 
-Consulta la [guía de configuración local de Apache](docs/configuracion-apache-local.md) para reproducir el entorno. MariaDB 12.0.2 funciona como servicio independiente de XAMPP; no debe iniciarse MySQL de XAMPP. La autenticación desde CMD está comprobada. La conexión PHP–PDO–MariaDB también fue comprobada mediante `database/check-connection.php`: seleccionó `sfatza`, ejecutó únicamente `SELECT 1` y terminó con código de salida 0. El sitio conserva HTTP 200 y su mensaje de preparación, sin cargar conexiones desde la página. La integración PDO con solicitudes HTTP sigue pendiente y los permisos efectivos sobre tablas mediante PDO no están comprobados. La [guía PDO](docs/conexion-pdo-local.md) distingue estos resultados de las pruebas recomendadas para otros equipos. No hay migraciones implementadas.
+La implementación del Sprint 1 y sus límites/pruebas se describen en la documentación técnica del [Sprint 1](docs/sprints/sprint-01/plan.md). Para configurar una computadora nueva, comenzar por la [guía de instalación Windows/XAMPP](docs/instalacion-windows-xampp.md). También están disponibles las guías de [Apache](docs/configuracion-apache-local.md), [PDO](docs/conexion-pdo-local.md), [administrador inicial](docs/administrador-inicial.md), [usuarios](docs/gestion-usuarios.md), [conductores](docs/gestion-conductores.md) y [login](docs/login-mvc.md).
 
 ## Tecnologías y arquitectura acordadas
 
@@ -31,6 +31,7 @@ Estas decisiones están recogidas en [AGENTS.md](AGENTS.md) y [docs/constitution
 | [docs/constitution.md](docs/constitution.md) | Ocho principios que rigen el desarrollo. |
 | [docs/configuracion-apache-local.md](docs/configuracion-apache-local.md) | Configuración de Windows y XAMPP, seguridad, validación y pruebas locales. |
 | [docs/conexion-pdo-local.md](docs/conexion-pdo-local.md) | Variables privadas, fábrica PDO y comprobación CLI de solo lectura. |
+| [docs/instalacion-windows-xampp.md](docs/instalacion-windows-xampp.md) | Preparación en otra computadora, límites del esquema disponible y acceso a la aplicación. |
 | [Documentos/Historias_Usuario.docx](Documentos/Historias_Usuario.docx) | Once historias de usuario y sus prioridades. |
 | [Documentos/Historias_Descripciones.docx](Documentos/Historias_Descripciones.docx) | Descripciones, requisitos y criterios de aceptación. |
 | [Documentos/Product_Backlog.docx](Documentos/Product_Backlog.docx) | Planificación, dependencias y estimaciones de las historias. |
@@ -46,14 +47,14 @@ Antes de implementar, consultar la constitución y la documentación del sprint 
 | PHP | Versión local 8.2.12; conexión PDO por CLI comprobada. | Versión objetivo e integración PDO con solicitudes HTTP. |
 | MariaDB | Servicio independiente 12.0.2; `sfatza` con 15 tablas, incluida `reembolso`, verificadas previamente con el cliente según confirmación del usuario. | Permisos efectivos sobre tablas mediante PDO. |
 | Servidor web | Apache de XAMPP; versión local informada: 2.4.58; `sfatsa.test` activo por HTTP. | Reproducir y validar en cada equipo; HTTPS propio pendiente. |
-| Bootstrap | Versión principal 5. | Versión específica y forma de incorporación. |
+| Bootstrap | 5.3.8, archivo local `public/assets/bootstrap/bootstrap.min.css`. | Validar los recursos HTTP localmente en cada equipo. |
 | Navegador | Soporte de HTML5, CSS3 y JavaScript. | Navegadores y versiones que se validarán. |
 
 Los datos anteriores describen el equipo de referencia y no establecen versiones mínimas para el proyecto. La guía distingue los resultados confirmados de las pruebas recomendadas para cada integrante.
 
 ## Configuración básica
 
-- `.gitignore` excluye entornos con secretos, dependencias, temporales, logs y cachés, y conserva `.env.example` como archivo versionable.
+- `.gitignore` excluye entornos con secretos, respaldos, dependencias, temporales, logs, cachés, llaves privadas y archivos locales del sistema/editor, y conserva `.env.example` y los SQL fuente versionables.
 - `.editorconfig` declara UTF-8, LF, salto de línea final, eliminación de espacios al final y sangría de 4 espacios para PHP y 2 para HTML, CSS, JavaScript, JSON, YAML y Markdown. Sus reglas dependen del soporte del editor y no se han aplicado automáticamente a archivos existentes.
 - `.env.example` contiene la URL local y la base `sfatza`; usuario y contraseña permanecen vacíos. El lector estricto está en `config/Environment.php`. No se crea `.env` automáticamente, ni una base de datos. Ejecutar `tests/pdo-infrastructure.php` para validar con datos ficticios; reservar `database/check-connection.php` para una prueba autorizada después de configurar las credenciales localmente.
 

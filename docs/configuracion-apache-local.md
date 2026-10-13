@@ -1,14 +1,14 @@
 # Apache local en Windows con XAMPP
 
-Esta guía reproduce el entorno de desarrollo de SFATSA por HTTP. Las funcionalidades del Sprint 1 todavía no están implementadas; esta guía no crea tablas. MariaDB 12.0.2 funciona como servicio independiente de XAMPP. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB, y la autenticación desde CMD está comprobada. No iniciar MySQL desde XAMPP. La [guía PDO](conexion-pdo-local.md) documenta la infraestructura PHP y la conexión CLI comprobada.
+Esta guía reproduce el entorno de desarrollo de SFATSA por HTTP. El código actual implementa login y gestión MVC del Sprint 1; esta guía no crea tablas. MariaDB 12.0.2 funciona como servicio independiente de XAMPP. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB, y la autenticación desde CMD está comprobada. No iniciar MySQL desde XAMPP. La [guía PDO](conexion-pdo-local.md) documenta variables privadas y comprobaciones.
 
 ## Estado confirmado en el equipo de referencia
 
-El usuario confirmó que Apache fue reiniciado, el VirtualHost está activo y el archivo hosts contiene `127.0.0.1 sfatsa.test`. PHP 8.2.12 y Apache 2.4.58 son las versiones locales informadas, sin establecer mínimos para el proyecto. No hay HTTPS propio de SFATSA. La conexión PHP–PDO–MariaDB fue comprobada por CLI con `database/check-connection.php`, seleccionando `sfatza` y ejecutando únicamente `SELECT 1`, con código de salida 0. La integración PDO con solicitudes HTTP sigue pendiente y los permisos efectivos sobre tablas mediante PDO no están comprobados. El sitio conserva HTTP 200 y su mensaje de preparación sin cargar conexiones desde la página.
+El usuario confirmó que Apache fue reiniciado, el VirtualHost está activo y el archivo hosts contiene `127.0.0.1 sfatsa.test`. PHP 8.2.12 y Apache 2.4.58 son las versiones locales informadas, sin establecer mínimos para el proyecto. No hay HTTPS propio de SFATSA. La conexión PHP–PDO–MariaDB fue comprobada por CLI con `database/check-connection.php`, seleccionando `sfatza` y ejecutando únicamente `SELECT 1`, con código de salida 0. La aplicación MVC actual integra PDO de forma diferida para operaciones que requieren datos; no se presenta aquí una nueva prueba HTTP integrada ni se certifican permisos efectivos de todas las operaciones en otro equipo.
 
 Validaciones ejecutadas por el agente: `httpd.exe -t` devolvió `Syntax OK` y código 0; `httpd.exe -S` devolvió código 0, con `localhost` predeterminado y `sfatsa.test` en puerto 80. El puerto 443 conserva el sitio SSL existente de XAMPP.
 
-Pruebas HTTP realizadas en este equipo y confirmadas por el usuario:
+Pruebas HTTP históricas del entorno base, realizadas en este equipo y confirmadas por el usuario antes de implementar las funcionalidades del Sprint 1:
 
 | Comprobación | Resultado confirmado |
 | --- | --- |

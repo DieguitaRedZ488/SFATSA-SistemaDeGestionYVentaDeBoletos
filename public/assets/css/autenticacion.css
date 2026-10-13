@@ -1,0 +1,91 @@
+/* Adaptación del LoginScreen consultado en Figma Make; sin React/Tailwind. */
+:root {
+    --sfatsa-ink: #222426;
+    --sfatsa-muted: #737677;
+    --sfatsa-paper: #f7f7f5;
+    --sfatsa-dark: #303335;
+    --sfatsa-button: #343739;
+    --sfatsa-line: #b8bbba;
+    --sfatsa-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 280px; color: var(--sfatsa-ink); background: var(--sfatsa-paper); font-family: var(--sfatsa-font); }
+button, input { font: inherit; }
+[hidden] { display: none !important; }
+.login-screen { min-height: 100vh; min-height: 100svh; display: grid; grid-template-columns: 42% 58%; }
+.login-aside {
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 42px 46px 38px; color: #f8f8f6; background-color: var(--sfatsa-dark);
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 34px 34px;
+}
+.login-aside__brand { font-family: Georgia, serif; font-size: 26px; font-weight: 700; letter-spacing: .1em; }
+.eyebrow { display: block; margin-bottom: 7px; color: #66696a; font-size: 11px; font-weight: 800; letter-spacing: .14em; }
+.eyebrow--light { color: #bbbebf; }
+.login-aside__copy h1 { margin: 15px 0 17px; font-family: Georgia, serif; font-size: 37px; font-weight: 400; line-height: 1.14; }
+.login-aside__copy p { max-width: 340px; margin: 0; color: #c8caca; font-size: 14px; line-height: 1.65; }
+.login-aside__footer { color: #bbbebf; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.login-main { display: grid; place-items: center; padding: 60px; }
+.login-card { width: 100%; max-width: 385px; }
+.login-card__index { color: #66696a; font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+.login-card h2 { margin: 12px 0 7px; font-family: Georgia, serif; font-size: 29px; font-weight: 500; }
+.login-card__intro { margin: 0 0 22px; color: #656869; font-size: 14px; line-height: 1.6; }
+.login-fields { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field__label { margin: 0; color: #4d5051; font-size: 13px; font-weight: 700; }
+.required { color: #66696a; }
+.field__control { width: 100%; height: 44px; padding: 0 11px; color: #353738; background: #fff; border: 1px solid var(--sfatsa-line); border-radius: 2px; font-size: 14px; }
+.field__control:focus { color: #353738; background: #fff; border-color: #555859; box-shadow: 0 0 0 2px #e5e6e4; }
+.field__control[aria-invalid="true"] { border-style: dashed; border-width: 2px; }
+:where(input, button, a):focus-visible { outline: 2px solid #343739; outline-offset: 3px; }
+.topbar :where(button, a):focus-visible { outline-color: #fff; }
+.button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 17px; border: 1px solid var(--sfatsa-button); border-radius: 3px; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.button--primary { color: #fff; background: var(--sfatsa-button); }
+.button--primary:hover, .button--primary:focus { color: #fff; background: #202224; border-color: #202224; }
+.button:disabled { opacity: .7; cursor: wait; }
+.login-help { margin: 19px 0 0; color: #656869; font-size: 12px; line-height: 1.6; text-align: center; }
+.sfatsa-alert { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 18px; padding: 12px; color: #444748; background: #ededeb; border: 1px dashed #8f9292; border-radius: 2px; font-size: 13px; line-height: 1.5; }
+.sfatsa-alert:focus { outline: 2px solid #343739; outline-offset: 3px; }
+.alert__mark { width: 18px; height: 18px; display: grid; place-items: center; flex: 0 0 auto; margin-top: 1px; color: #fff; background: #55585a; border-radius: 50%; font-size: 10px; font-weight: 800; }
+.loading-indicator { width: 15px; height: 15px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: girar .8s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 32px; color: #fff; background: #2d3032; }
+.brand { color: #fff; font-family: Georgia, serif; font-size: 26px; font-weight: 700; letter-spacing: .08em; text-decoration: none; }
+.brand:hover { color: #fff; }
+.button--logout { color: #fff; background: transparent; border-color: #aeb1b2; }
+.button--logout:hover { color: #fff; background: #424446; border-color: #fff; }
+.inicio-main { max-width: 1000px; padding-top: 54px; padding-bottom: 54px; }
+.inicio-main h1 { overflow-wrap: anywhere; margin: 12px 0; font-family: Georgia, serif; font-size: 32px; font-weight: 400; }
+.inicio-intro { color: var(--sfatsa-muted); margin-bottom: 30px; }
+.bienvenida-card, .desarrollo-card { padding: 26px; border: 1px solid #c3c5c3; border-radius: 3px; box-shadow: 0 3px 9px rgba(30,32,33,.04); background: #fff; }
+.bienvenida-card h2, .desarrollo-card h2 { margin: 0 0 16px; font-family: Georgia, serif; font-size: 23px; font-weight: 400; }
+.datos-cuenta { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0; }
+.datos-cuenta dt { margin-bottom: 8px; color: #656869; font-size: 12px; font-weight: 600; }
+.datos-cuenta dd { margin: 0; overflow-wrap: anywhere; }
+.role-badge { display: inline-block; padding: 5px 10px; color: #414344; background: #dedfdd; border: 1px solid #c0c2c1; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.desarrollo-card { margin-top: 22px; }
+.desarrollo-card p { margin-bottom: 10px; line-height: 1.6; }
+.desarrollo-note { color: #656869; font-size: 13px; }
+.mensaje-main { min-height: 100vh; display: grid; place-items: center; padding: 28px; }
+.mensaje-card { width: 100%; max-width: 500px; padding: 32px; border-color: #c3c5c3; border-radius: 3px; }
+.brand--oscura, .brand--oscura:hover { color: var(--sfatsa-ink); }
+.mensaje-card h1 { margin: 24px 0 14px; font-family: Georgia, serif; font-size: 30px; font-weight: 400; }
+.mensaje-card p { line-height: 1.7; color: #656869; }
+.mensaje-card .button { align-self: flex-start; margin-top: 12px; }
+@media (max-width: 767px) {
+    .login-screen { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .login-aside { padding: 26px 28px; gap: 24px; }
+    .login-aside__copy h1 { font-size: 28px; margin: 8px 0 12px; }
+    .login-aside__copy h1 br { display: none; }
+    .login-aside__copy p { max-width: none; font-size: 13px; }
+    .login-aside__footer { display: none; }
+    .login-main { padding: 38px 28px 44px; align-items: start; }
+    .field__control { font-size: 16px; }
+    .topbar { padding: 18px 20px; flex-wrap: wrap; }
+    .inicio-main { padding: 36px 20px; }
+    .inicio-main h1 { font-size: 27px; }
+    .datos-cuenta { grid-template-columns: 1fr; gap: 18px; }
+    .bienvenida-card, .desarrollo-card { padding: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .loading-indicator { animation: none; } }
