@@ -4,7 +4,7 @@
 
 Migración **20261013_001: APLICADA Y VERIFICADA MANUALMENTE, SEGÚN CONFIRMACIÓN DEL USUARIO**. usuario y conductor tienen nombres y apellidos VARCHAR(120) NOT NULL, sin la columna antigua nombre, y sfatza conserva 22 claves foráneas. Ambas tablas estaban vacías antes del cambio. El usuario confirmó respaldo privado creado, restauración exitosa y ensayo de ALTER en sfatza_restore_test_20261013 antes de aplicarlos a sfatza; Figma original no fue modificado.
 
-La revisión que preparó originalmente este registro sincronizó documentación y ejecutó únicamente pruebas locales seguras, sin conexiones a BD ni carga de `.env` real. En la preparación posterior del inicializador (Prompt 22), el agente sí consultó metadatos y tres catálogos de solo lectura, sin consultar cuentas/conductores ni modificar esquema o datos. La ejecución manual de 20261013_001 y sus límites están en [EV-08](../../docs/sprints/sprint-01/verificacion.md); la nueva inspección y el inicializador se describen en «Esquema inicial para instalaciones nuevas».
+El estado de 20261013_001 indicado aquí corresponde a la confirmación del responsable del proyecto. El inicializador para instalaciones nuevas y el estado de 20261013_002 se describen más adelante en «Esquema inicial para instalaciones nuevas».
 
 Archivos:
 
@@ -174,11 +174,11 @@ No borrar registros para habilitar DOWN. No convertir nombres/apellidos a un nom
 
 ## Trazabilidad y autorización
 
-Los archivos están numerados y se vinculan a [spec.md](../../docs/sprints/sprint-01/spec.md), [plan.md](../../docs/sprints/sprint-01/plan.md), [tasks.md](../../docs/sprints/sprint-01/tasks.md) y [verificacion.md](../../docs/sprints/sprint-01/verificacion.md). La preparación conserva 14 tareas y 46 IDs principales de pruebas; los escenarios de ambos campos se añaden como subcasos.
+El estado operativo se documenta en este archivo y en [database/install.sql](../install.sql), que incorpora el esquema objetivo para una base nueva. Las migraciones individuales se mantienen para instalaciones existentes y no deben repetirse sobre una base nueva que ya use el instalador.
 
 Registrar en la documentación autorizada la versión exacta, qué sentencia se ejecutó, metadatos antes/después, resultado y límites. No crear una tabla de control de migraciones ni modificar otras tablas como parte de este cambio.
 
-Estado operativo: **UP APLICADO Y VERIFICADO MANUALMENTE SEGÚN EL USUARIO**, con respaldo restaurado y ensayo previo en sfatza_restore_test_20261013. Las 33 comprobaciones de infraestructura y seis lint mencionadas en registros anteriores pertenecen a la revisión original, que no se conectó a BD; no son pruebas de esta preparación. El Prompt 22 comprobó metadatos de solo lectura y revisó estáticamente el nuevo inicializador, pero no ejecutó SQL. La situación de login y CRUD se describe en las guías técnicas del Sprint 1; esta migración no certifica sus pruebas funcionales.
+Estado operativo: **UP APLICADO Y VERIFICADO MANUALMENTE SEGÚN EL USUARIO**, con respaldo restaurado y ensayo previo en sfatza_restore_test_20261013. La revisión del inicializador fue estática; no ejecutó SQL. Esta migración no certifica las pruebas funcionales de login o CRUD, que se describen en las guías técnicas públicas.
 
 Los scripts SQL no fueron modificados en esta revisión. No hay credenciales ni respaldos privados en los siete cambios revisados. Ejecutar DOWN, nuevos DDL/DML, respaldos/restauraciones o crear usuarios requiere autorización propia; tener una base restaurada existente no concede permiso para modificarla.
 
