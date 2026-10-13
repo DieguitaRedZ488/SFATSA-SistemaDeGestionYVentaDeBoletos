@@ -3,14 +3,14 @@
 ## Estado actual
 
 - Sistema de Gestión y Venta de Boletos.
-- Fase 04: configuración inicial, sin implementación funcional.
-- `Index.html` contiene una página de prueba.
-- `public/index.php` es la entrada web local y muestra «SFATSA está en preparación.».
+- Sprint 1 dispone de login MVC, administrador inicial por CLI, gestión de usuarios HU-01 y gestión de conductores HU-03; las guías técnicas describen sus rutas y límites. El código está pendiente de integración y las pruebas manuales adicionales indicadas en la documentación siguen siendo responsabilidad del equipo.
+- `public/index.php` es la entrada web y enlaza las pantallas implementadas del Sprint 1.
 - VirtualHost `sfatsa.test` activo por HTTP; Apache fue reiniciado y hosts contiene `127.0.0.1 sfatsa.test`, según confirmación del usuario.
 - HTTPS propio de SFATSA no está configurado.
-- Las funcionalidades del Sprint 1 todavía no están implementadas. Según confirmación del usuario, `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB; esta tarea no crea ni altera datos.
-- Autenticación desde CMD de `sfatza_app@127.0.0.1`: comprobada. Conexión PHP–PDO–MariaDB por CLI: comprobada mediante `database/check-connection.php`, seleccionando `sfatza` y ejecutando únicamente `SELECT 1`, con código de salida 0.
-- Integración PDO con solicitudes HTTP: pendiente. Permisos efectivos sobre tablas mediante PDO: no comprobados.
+- En la inspección de solo lectura de Prompt 22, MariaDB reportó versión `12.0.2-MariaDB-log`; `sfatza` tiene 15 tablas base InnoDB, charset/collation `utf8mb4`/`utf8mb4_uca1400_ai_ci` y 22 columnas de clave foránea. Se consultaron `SHOW CREATE TABLE`, metadatos y solamente los nombres/estados de los catálogos `rol`, `metodo_pago` y `tipo_servicio`; no se leyeron filas de `usuario` ni `conductor`.
+- El esquema existente refleja nombres y apellidos separados en `usuario` y `conductor`. `conductor.numero_licencia` sigue `VARCHAR(40) NULL DEFAULT NULL` con índice UNIQUE; la migración 20261013_002 permanece preparada y sin aplicar.
+- `database/install.sql` prepara la creación desde cero de las 15 tablas y solo los catálogos comprobados. Incorpora el resultado de 20261013_001 y el objetivo NOT NULL de 20261013_002 para una base nueva. El archivo no fue ejecutado; no se hicieron escrituras ni cambios de esquema.
+- La conexión PHP–PDO a `sfatza` permitió esta inspección de solo lectura mediante `ConnectionFactory`; no se comprobaron en esta tarea permisos efectivos de escritura ni flujos HTTP.
 - Ya existen instrucciones, constitución y configuración básica del repositorio.
 
 ## Entorno y decisiones
@@ -40,9 +40,7 @@
 
 ## Estado de Git
 
-- Rama de trabajo actual: `chore/conexion-pdo-mariadb`, creada desde `main` limpio.
-- Referencia histórica de la configuración inicial: rama `chore/configuracion-inicial`, publicada con seguimiento de `origin/chore/configuracion-inicial`; commit `ae0f065`.
-- Documentación Apache integrada mediante PR #3, commit `d55e024`; `main` se sincronizó con `origin/main`. Infraestructura PDO pendiente de revisión, sin commit ni push.
+- Rama de trabajo observada: `docs/sprint-01-planificacion`, HEAD `ed791dbaa06f54ed6588268f1a301acb87617d33`. Hay cambios locales pendientes; no se han preparado en el índice ni confirmado en Git durante esta tarea.
 
 ## Infraestructura PDO
 
@@ -50,7 +48,7 @@
 - `config/Environment.php` prioriza variables del proceso y lee `.env` privado sin dependencias, interpolación ni ejecución. Conserva valores de contraseña literalmente.
 - `config/database.php` valida configuración local, exige credenciales y rechaza root; `app/Repositories/ConnectionFactory.php` crea PDO sin persistencia ni singleton.
 - `database/check-connection.php` solo acepta CLI, selecciona `sfatza`, ejecuta `SELECT 1` y devuelve mensajes generales sin secretos. La prueba real autorizada devolvió «Conexión PDO comprobada correctamente.» y código de salida 0.
-- Pruebas ejecutadas: sintaxis de los cinco archivos PHP correcta; 33 comprobaciones locales con datos ficticios aprobadas, sin conexión a MariaDB; `.env` ignorado por Git. HTTP comprobado nuevamente: 200 y mensaje de preparación. El sitio público no carga la fábrica.
+- En la comprobación histórica de infraestructura: sintaxis de cinco archivos PHP correcta y 33 comprobaciones locales con datos ficticios aprobadas, sin conexión a MariaDB; `.env` ignorado por Git. El HTTP 200 con mensaje de preparación corresponde a antes de integrar login y las gestiones del Sprint 1.
 - El usuario configuró manualmente `.env` privado; su existencia y exclusión de Git se comprobaron sin mostrar su contenido. No se crea automáticamente. Las credenciales reales permanecen fuera de Git; no mostrar DSN, configuración ni trazas por HTTP.
 
 ## Apache local y verificaciones
@@ -71,11 +69,12 @@
 - No modificar documentación académica, modelos ni especificaciones aprobadas sin autorización.
 - No instalar herramientas, dependencias ni MCP sin autorización.
 - No ejecutar commits, push ni merges sin autorización.
-- Esta fase implementa únicamente infraestructura técnica; no desarrolla funcionalidades, altera modelos o datos ni crea especificaciones de sprint.
+- Los inicializadores y migraciones SQL son artefactos para revisión y ejecución autorizada en una instalación local; no ejecutarlos sobre la base existente por defecto.
+- No realizar escrituras, cambios de esquema, migraciones ni pruebas destructivas en `sfatza` sin autorización explícita.
 
 ## Próximos pasos
 
-1. Revisar la documentación de Apache y reproducir las verificaciones en los equipos del grupo.
-2. Planificar la integración PDO por HTTP y la verificación de permisos efectivos sobre tablas con autorización; HTTPS propio sigue pendiente.
-3. Aclarar el alcance y las discrepancias del Sprint 1.
-4. Aplicar SDD por sprint y HU, con aprobación antes de implementar.
+1. Revisar el inicializador SQL y probarlo únicamente en una base local desechable autorizada antes de compartirlo.
+2. Mantener 20261013_002 como pendiente para `sfatza`; cualquier ejecución requiere autorización expresa, respaldo/ensayo y verificación de precondiciones.
+3. Reproducir en otros equipos las comprobaciones de Apache y revisar los requisitos técnicos de Sprint 1.
+4. HTTPS propio y discrepancias documentales del Sprint 1 siguen pendientes.

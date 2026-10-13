@@ -1,6 +1,6 @@
 # Conexión PDO local
 
-Infraestructura mínima para PHP 8.2 y MariaDB 12.0.2, que funciona como servicio independiente de XAMPP en `127.0.0.1:3306`. No instala dependencias ni crea tablas. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB. Las funcionalidades del Sprint 1 todavía no están implementadas.
+Infraestructura PDO usada por la aplicación MVC PHP 8.2 y MariaDB 12.0.2, que funciona como servicio independiente de XAMPP en `127.0.0.1:3306`. No instala dependencias ni crea tablas. Según confirmación del usuario, la base existente `sfatza` contiene 15 tablas, incluida `reembolso`, verificadas previamente mediante el cliente MariaDB. Para instalar la aplicación en otra computadora, consulte también la [guía Windows/XAMPP](instalacion-windows-xampp.md).
 
 ## Resultados comprobados en este equipo
 
@@ -8,8 +8,8 @@ Infraestructura mínima para PHP 8.2 y MariaDB 12.0.2, que funciona como servici
 | --- | --- |
 | Autenticación desde CMD de la cuenta de aplicación | Comprobada, según confirmación del usuario. |
 | Conexión PHP–PDO–MariaDB por CLI | Comprobada mediante `database/check-connection.php`, seleccionando `sfatza` y ejecutando únicamente `SELECT 1`; mensaje de éxito y código de salida 0. |
-| Sitio `http://sfatsa.test/` | HTTP 200 y mensaje de preparación, sin conexiones activadas desde la página. |
-| Integración PDO con solicitudes HTTP | Pendiente. |
+| Chequeo de conexión CLI | Histórico: `database/check-connection.php` seleccionó `sfatza` e hizo `SELECT 1`; no comprueba permisos CRUD. |
+| Integración PDO en la aplicación web | Implementada de forma diferida en la entrada MVC; su comportamiento con credenciales/servicios de otra máquina debe validarse allí. |
 | Permisos efectivos sobre tablas mediante PDO | No comprobados; `SELECT 1` no accede a las tablas. |
 
 El usuario configuró manualmente `.env` privado. Se comprobó que está ignorado y no versionado, sin mostrar su contenido. Los resultados anteriores corresponden a este equipo; cada integrante debe comprobar su entorno sin asumir que ya fue validado.

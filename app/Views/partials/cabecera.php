@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= $escapar($titulo) ?> · SFATSA</title>
+    <link rel="stylesheet" href="/assets/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/autenticacion.css">
+    <script src="/assets/js/autenticacion.js" defer></script>
+    <?php if ($estilosUsuarios ?? false): ?>
+        <link rel="stylesheet" href="/assets/css/usuarios.css">
+        <script src="/assets/js/usuarios.js" defer></script>
+    <?php endif; ?>
+</head>
+<body class="<?= $escapar($claseBody ?? '') ?>">
