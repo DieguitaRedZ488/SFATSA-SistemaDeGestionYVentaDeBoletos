@@ -198,7 +198,7 @@ No compartir logs sin revisar si contienen información sensible. No sustituir l
 
 ## Archivos que no deben versionarse
 
-Los archivos reales de Apache y hosts, sus respaldos, certificados privados, logs y credenciales deben permanecer fuera del repositorio. Versionar únicamente documentación y ejemplos sin secretos. `.env.example` contiene valores locales no secretos y credenciales vacías; el lector `config/Environment.php` permite cargar un `.env` privado sin crearlo automáticamente. No copiar credenciales a la plantilla, README o MEMORY.
+Los archivos reales de Apache y hosts, sus respaldos, certificados privados, logs y credenciales deben permanecer fuera del repositorio. Versionar únicamente documentación y ejemplos sin secretos. El lector `config/Environment.php` permite cargar un `.env` privado sin crearlo automáticamente. Crearlo manualmente conforme a la [guía de instalación](instalacion-windows-xampp.md#3-configurar-las-variables-privadas), sin sobrescribir uno existente. Los archivos de entorno y sus plantillas no se publican en GitHub. No copiar credenciales a documentación ni archivos versionados.
 
 ## Referencias
 

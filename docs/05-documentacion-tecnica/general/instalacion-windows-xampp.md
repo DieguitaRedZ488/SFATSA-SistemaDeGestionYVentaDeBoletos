@@ -46,14 +46,14 @@ El repositorio remoto contendrá solo los cambios ya publicados; cambios locales
 
 ## 3. Configurar las variables privadas
 
-En la raíz del repositorio, copiar `.env.example` a `.env` y editar `.env` localmente:
+En la raíz del repositorio, crear manualmente un archivo `.env` privado si todavía no existe. Si ya existe, conservarlo. No se distribuye una plantilla de entorno. Editarlo únicamente en el equipo local:
 
 ```powershell
-Copy-Item .env.example .env
+# Conservar el archivo si ya existe.
 notepad .env
 ```
 
-Completar `DB_USERNAME` y `DB_PASSWORD` con la cuenta local entregada de forma privada. No pegar credenciales en comandos, chats, capturas, Git ni esta guía. Mantener los demás valores compatibles con el servicio acordado: `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=sfatza`, `DB_CHARSET=utf8mb4`. `.env` está excluido de Git; `.env.example` es la plantilla versionable y deja secretos vacíos. La validación rechaza `root`.
+Guardar como UTF-8 sin BOM, con una asignación `CLAVE=valor` por línea. Incluir las seis variables: `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_CHARSET`, `DB_USERNAME` y `DB_PASSWORD`. Completar `DB_USERNAME` y `DB_PASSWORD` con la cuenta local entregada de forma privada. No pegar credenciales en comandos, chats, capturas, Git ni esta guía. Mantener los demás valores compatibles con el servicio acordado: `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=sfatza`, `DB_CHARSET=utf8mb4`. Los archivos de entorno y sus plantillas están excluidos de Git. Mantener `.env` fuera de `public/` y con permisos de lectura restringidos. La validación rechaza `root`.
 
 El chequeo `database/check-connection.php` solo ejecuta `SELECT 1`, pero abre una conexión real; usarlo únicamente en la computadora propia una vez configuradas las credenciales y autorizado por el equipo:
 
