@@ -11,6 +11,8 @@ foreach ([
     '/Repositories/PdoGestionUsuarioRepository.php',
     '/Repositories/ConductorRepository.php',
     '/Repositories/PdoConductorRepository.php',
+    '/Repositories/VehiculoRepository.php',
+    '/Repositories/PdoVehiculoRepository.php',
     '/Repositories/ConnectionFactory.php',
     '/Security/SessionStore.php',
     '/Security/SesionPhp.php',
@@ -23,11 +25,15 @@ foreach ([
     '/Services/UsuarioService.php',
     '/Services/ErrorGestionConductores.php',
     '/Services/ConductorService.php',
+    '/Services/ErrorGestionVehiculos.php',
+    '/Services/VehiculoService.php',
+    '/Services/RegistroVehiculoService.php',
     '/Http/Respuesta.php',
     '/Http/Vista.php',
     '/Controllers/AutenticacionController.php',
     '/Controllers/UsuarioController.php',
     '/Controllers/ConductorController.php',
+    '/Controllers/VehiculoController.php',
 ] as $archivoClase) {
     require_once __DIR__ . $archivoClase;
 }

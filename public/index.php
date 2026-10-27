@@ -45,6 +45,18 @@ try {
         $sesion, $csrf, $crearAutenticacion, new SFATSA\Http\Vista(), new SFATSA\Services\AutorizacionService()
     );
     $routes = require dirname(__DIR__) . '/routes/web.php';
+    $plantillasVehiculos = ['listado', 'formulario', 'confirmacion', 'estado'];
+    foreach ($plantillasVehiculos as $plantilla) {
+        if (!is_file(dirname(__DIR__) . '/app/Views/vehiculos/' . $plantilla . '.php')) {
+            foreach ([
+                'vehiculos', 'vehiculos.registrar', 'vehiculos.revisar', 'vehiculos.confirmar',
+                'vehiculos.cancelar', 'vehiculos.editar', 'vehiculos.estado',
+            ] as $rutaVehiculos) {
+                unset($routes[$rutaVehiculos]);
+            }
+            break;
+        }
+    }
     $ruta = $_GET['ruta'] ?? 'login';
     $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     if (!is_string($ruta) || !isset($routes[$ruta])) {
@@ -78,15 +90,40 @@ try {
                     static fn () => $controller->usuarioActual(), $crearConductores, $csrf, $store,
                     new SFATSA\Http\Vista(), new SFATSA\Services\AutorizacionService()
                 );
-            } else {
+            } elseif ($accion[0] === 'vehiculos') {
+                $servicioVehiculos = null;
+                $crearVehiculos = static function () use (&$servicioVehiculos, $crearConexion): SFATSA\Services\VehiculoService {
+                    if ($servicioVehiculos === null) {
+                        $pdo = $crearConexion();
+                        $servicioVehiculos = new SFATSA\Services\VehiculoService(
+                            new SFATSA\Repositories\PdoVehiculoRepository($pdo),
+                            new SFATSA\Services\OperacionAdministrativaService(
+                                new SFATSA\Repositories\PdoGestionUsuarioRepository($pdo)
+                            )
+                        );
+                    }
+                    return $servicioVehiculos;
+                };
+                $crearRegistroVehiculo = static function () use ($crearVehiculos, $store): SFATSA\Services\RegistroVehiculoService {
+                    return new SFATSA\Services\RegistroVehiculoService($crearVehiculos(), $store);
+                };
+                $gestionController = new SFATSA\Controllers\VehiculoController(
+                    static fn () => $controller->usuarioActual(), $crearVehiculos, $crearRegistroVehiculo,
+                    $csrf, $store, new SFATSA\Http\Vista(), new SFATSA\Services\AutorizacionService()
+                );
+            } elseif ($accion[0] === 'usuarios') {
                 $gestionController = new SFATSA\Controllers\UsuarioController(
                     static fn () => $controller->usuarioActual(), $crearUsuarios, $csrf, $store,
                     new SFATSA\Http\Vista(), new SFATSA\Services\AutorizacionService()
                 );
+            } else {
+                $respuesta = $controller->mensaje('Página no encontrada', 'La página solicitada no está disponible.', 404);
             }
-            $metodoGestion = $accion[1];
-            $respuesta = $metodo === 'POST'
-                ? $gestionController->$metodoGestion($_POST, $_GET) : $gestionController->$metodoGestion($_GET);
+            if (isset($gestionController)) {
+                $metodoGestion = $accion[1];
+                $respuesta = $metodo === 'POST'
+                    ? $gestionController->$metodoGestion($_POST, $_GET) : $gestionController->$metodoGestion($_GET);
+            }
         } else {
             $respuesta = $metodo === 'POST' ? $controller->$accion($_POST) : $controller->$accion();
         }

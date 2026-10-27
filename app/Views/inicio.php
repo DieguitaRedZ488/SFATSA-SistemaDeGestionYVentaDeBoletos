@@ -1,6 +1,10 @@
 <?php
 $titulo = 'Inicio';
 $claseBody = 'pagina-inicio';
+$vehiculosDisponibles = true;
+foreach (['listado', 'formulario', 'confirmacion', 'estado'] as $plantillaVehiculo) {
+    $vehiculosDisponibles = $vehiculosDisponibles && is_file(__DIR__ . '/vehiculos/' . $plantillaVehiculo . '.php');
+}
 require __DIR__ . '/partials/cabecera.php';
 ?>
 <header class="topbar">
@@ -41,6 +45,14 @@ require __DIR__ . '/partials/cabecera.php';
         <h2 id="conductores-title">Gestión de conductores</h2>
         <p>Registre conductores, consulte sus datos y administre su estado activo o inactivo.</p>
         <a class="btn button button--primary" href="/?ruta=conductores">Abrir Gestión de conductores</a>
+    </section>
+    <?php endif; ?>
+    <?php if ($puedeGestionar && $vehiculosDisponibles): ?>
+    <section class="card desarrollo-card" aria-labelledby="vehiculos-title">
+        <span class="eyebrow">SPRINT 2 · HU-02</span>
+        <h2 id="vehiculos-title">Gestión de vehículos</h2>
+        <p>Consulte las unidades, revise nuevos registros y administre sus datos y estado.</p>
+        <a class="btn button button--primary" href="/?ruta=vehiculos">Abrir Gestión de vehículos</a>
     </section>
     <?php endif; ?>
 </main>
