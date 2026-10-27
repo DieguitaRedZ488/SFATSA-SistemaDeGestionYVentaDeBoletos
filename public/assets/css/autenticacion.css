@@ -1,11 +1,15 @@
 /* Adaptación del LoginScreen consultado en Figma Make; sin React/Tailwind. */
 :root {
     --sfatsa-ink: #222426;
-    --sfatsa-muted: #737677;
+    --sfatsa-muted: #60676f;
     --sfatsa-paper: #f7f7f5;
     --sfatsa-dark: #303335;
-    --sfatsa-button: #343739;
-    --sfatsa-line: #b8bbba;
+    --sfatsa-button: #1d4ed8;
+    --sfatsa-accent: #1d4ed8;
+    --sfatsa-accent-hover: #1e40af;
+    --sfatsa-mint: #9ee4ce;
+    --sfatsa-mint-ink: #17634f;
+    --sfatsa-line: #c8ced4;
     --sfatsa-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 * { box-sizing: border-box; }
@@ -89,3 +93,43 @@ button, input { font: inherit; }
     .bienvenida-card, .desarrollo-card { padding: 22px; }
 }
 @media (prefers-reduced-motion: reduce) { .loading-indicator { animation: none; } }
+
+/* Identidad SFATSA: superficies neutras y azul reservado a acciones y foco. */
+body { line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.sfatsa-icon { display: inline-block; width: 20px; height: 20px; flex: 0 0 auto; vertical-align: middle; }
+.module-icon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 46px; height: 46px; border: 1px solid #dbe5f8; border-radius: 12px; background: #eef3fc; color: var(--sfatsa-accent); }
+.module-icon .sfatsa-icon { width: 24px; height: 24px; }
+.module-icon--mint { color: var(--sfatsa-mint-ink); background: #ebf8f2; border-color: #cceadf; }
+a { color: var(--sfatsa-accent); text-underline-offset: .2em; }
+button, input, select, textarea { font: inherit; }
+.login-card { max-width: 440px; padding: 36px; background: #fff; border: 1px solid #e1e4e7; border-radius: 16px; box-shadow: 0 12px 36px rgb(34 36 38 / 6%); }
+.login-card > .module-icon { display: flex; margin-bottom: 22px; }
+.login-card h2, .mensaje-card h1 { font-family: var(--sfatsa-font); font-weight: 700; letter-spacing: -.025em; }
+.login-aside { background-color: #252a30; border-right: 1px solid #181c21; }
+.login-aside__copy .eyebrow { color: var(--sfatsa-mint); }
+.login-aside__copy h1 { font-family: var(--sfatsa-font); font-size: clamp(30px, 3.2vw, 44px); font-weight: 650; letter-spacing: -.035em; }
+.login-aside__footer { padding-top: 20px; border-top: 1px solid #414954; }
+.field__control { min-height: 46px; border-radius: 7px; }
+.field__control:focus { border-color: var(--sfatsa-accent); box-shadow: 0 0 0 3px rgb(29 78 216 / 12%); }
+:where(input, select, textarea, button, a):focus-visible { outline: 2px solid var(--sfatsa-accent); outline-offset: 3px; }
+.field__control[aria-invalid="true"] { border: 1px solid #b42318; }
+.button { border-radius: 7px; line-height: 1.4; padding-block: 10px; }
+.button--primary:hover, .button--primary:focus { background: var(--sfatsa-accent-hover); border-color: var(--sfatsa-accent-hover); }
+.button:disabled { cursor: not-allowed; }
+.sfatsa-alert { border: 1px solid #d0d5dd; border-left: 3px solid #667085; border-radius: 8px; background: #f3f4f6; color: #344054; }
+.sfatsa-alert[role="alert"] { background: #fff7f6; color: #912018; border-color: #f1c9c4; }
+.sfatsa-alert--exito { color: #166534; background: #edf8f1; border-color: #b9dfc8; }
+.bienvenida-card, .desarrollo-card, .mensaje-card { border-color: #e0e4e9; border-radius: 12px; box-shadow: 0 4px 18px rgb(25 34 48 / 5%); }
+.inicio-main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.inicio-main > .eyebrow, .inicio-main > h1, .inicio-intro, .bienvenida-card { grid-column: 1 / -1; }
+.inicio-main > .eyebrow, .inicio-main > h1, .inicio-intro { margin: 0; }
+.inicio-intro { margin-bottom: 6px; }
+.desarrollo-card { margin-top: 0; gap: 8px; }
+.desarrollo-card .button { align-self: flex-start; margin-top: auto; }
+.mensaje-card > .module-icon { margin-top: 24px; }
+.mensaje-card h1 { margin-top: 18px; }
+@media (max-width: 767px) {
+    .login-main { padding: 24px 16px 32px; }
+    .login-card { padding: 24px 20px; }
+    .inicio-main { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}

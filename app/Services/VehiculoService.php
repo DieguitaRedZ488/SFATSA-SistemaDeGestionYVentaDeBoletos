@@ -54,11 +54,11 @@ final class VehiculoService
 
     private function placa(mixed $valor): string
     {
-        // ASCII: no transliterar acentos ni convertir otros alfabetos a A-Z.
-        $placa = strtoupper($this->texto($valor, 20, 'placa'));
-        if (preg_match('/\A[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?\z/', $placa) !== 1) {
+        // Regla interna SFATSA. ASCII sin transliteración ni eliminación de espacios/guiones.
+        $placa = is_string($valor) ? strtoupper($valor) : '';
+        if (strlen($placa) !== 9 || preg_match('/\A[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+\z/', $placa) !== 1) {
             throw new ErrorGestionVehiculos([
-                'placa' => 'Use letras A-Z, números 0-9 y guiones únicamente en el interior, sin espacios.',
+                'placa' => 'Distribuya exactamente 7 letras A-Z o números entre tres grupos no vacíos, separados por dos guiones (9 caracteres en total). No use espacios ni otros símbolos.',
             ]);
         }
         return $placa;
@@ -66,16 +66,16 @@ final class VehiculoService
 
     private function capacidad(mixed $valor): int
     {
-        if (is_int($valor) && $valor >= 1 && $valor <= 65535) {
+        if (is_int($valor) && $valor >= 1 && $valor <= 30) {
             return $valor;
         }
         if (is_string($valor) && preg_match('/\A[0-9]+\z/', $valor) === 1) {
             $significativos = ltrim($valor, '0');
-            if ($significativos !== '' && strlen($significativos) <= 5 && (int) $significativos <= 65535) {
+            if ($significativos !== '' && strlen($significativos) <= 2 && (int) $significativos <= 30) {
                 return (int) $significativos;
             }
         }
-        throw new ErrorGestionVehiculos(['capacidad' => 'Introduzca un número entero de pasajeros entre 1 y 65535.']);
+        throw new ErrorGestionVehiculos(['capacidad' => 'La capacidad debe estar entre 1 y 30 pasajeros']);
     }
 
     private function validar(array $entrada, bool $alta): array
@@ -146,6 +146,34 @@ final class VehiculoService
         });
     }
 
+    private function versionEliminacion(array $fila): string
+    {
+        $campos = ['id_vehiculo', 'numero_economico', 'placa', 'descripcion', 'capacidad', 'estado'];
+        $datos = [];
+        foreach ($campos as $campo) {
+            if (!array_key_exists($campo, $fila)) {
+                throw new ErrorGestionVehiculos([], 'La información del vehículo no está disponible.', 503);
+            }
+            $datos[$campo] = $fila[$campo] === null ? null : (string) $fila[$campo];
+        }
+        return hash('sha256', serialize($datos));
+    }
+
+    public function prepararEliminacion(mixed $idVehiculo): array
+    {
+        $idVehiculo = self::id($idVehiculo);
+        return $this->leer(function () use ($idVehiculo): array {
+            if (!$this->repository->dependenciasVerificadas()) {
+                throw new ErrorGestionVehiculos([], 'El esquema de dependencias no está verificado; la eliminación está deshabilitada.', 503);
+            }
+            $fila = $this->repository->buscar($idVehiculo);
+            if ($fila === null) {
+                throw new ErrorGestionVehiculos([], 'No se encontró el vehículo solicitado.', 404);
+            }
+            return $fila + ['version' => $this->versionEliminacion($fila)];
+        });
+    }
+
     private function comprobarUnicos(array $datos, ?int $excepto = null): void
     {
         $errores = [];
@@ -188,6 +216,9 @@ final class VehiculoService
                     array_fill_keys($campos, 'Este identificador ya pertenece a otro vehículo.'),
                     'La placa o el número económico ya está registrado.', 409
                 );
+            }
+            if ((int) ($error->errorInfo[1] ?? 0) === 1451) {
+                throw new ErrorGestionVehiculos([], 'No se puede eliminar porque existen registros relacionados que deben conservarse.', 409);
             }
             throw $this->errorDeEscritura();
         } catch (Throwable) {
@@ -246,6 +277,36 @@ final class VehiculoService
                 throw new ErrorGestionVehiculos([], 'El vehículo ya tiene el estado solicitado. No se realizaron cambios.', 409);
             }
             $this->repository->cambiarEstado($idVehiculo, $nuevoEstado, $anterior);
+        });
+    }
+
+    public function eliminar(int $idActor, mixed $idVehiculo, mixed $versionEsperada, mixed $confirmacion): void
+    {
+        $idVehiculo = self::id($idVehiculo);
+        if ($confirmacion !== '1') {
+            throw new ErrorGestionVehiculos([], 'Confirme la eliminación física del vehículo antes de continuar.');
+        }
+        if (!is_string($versionEsperada) || preg_match('/\A[a-f0-9]{64}\z/', $versionEsperada) !== 1) {
+            throw new ErrorGestionVehiculos([], 'La confirmación de los datos no es válida.', 400);
+        }
+        $this->operar($idActor, function () use ($idVehiculo, $versionEsperada): void {
+            $fila = $this->repository->buscar($idVehiculo, true);
+            if ($fila === null) {
+                throw new ErrorGestionVehiculos([], 'No se encontró el vehículo solicitado.', 404);
+            }
+            if (!hash_equals($this->versionEliminacion($fila), $versionEsperada)) {
+                throw new ErrorGestionVehiculos([], 'Los datos del vehículo cambiaron. Revise nuevamente antes de eliminar.', 409);
+            }
+            if (!$this->repository->dependenciasVerificadas()) {
+                throw new ErrorGestionVehiculos([], 'El esquema de dependencias no está verificado; la eliminación está deshabilitada.', 503);
+            }
+            if ($this->repository->tieneViajes($idVehiculo)) {
+                throw new ErrorGestionVehiculos([], 'No se puede eliminar: el vehículo tiene viajes registrados.', 409);
+            }
+            if ($this->repository->tieneMantenimientos($idVehiculo)) {
+                throw new ErrorGestionVehiculos([], 'No se puede eliminar: el vehículo tiene registros de mantenimiento.', 409);
+            }
+            $this->repository->eliminar($idVehiculo);
         });
     }
 }

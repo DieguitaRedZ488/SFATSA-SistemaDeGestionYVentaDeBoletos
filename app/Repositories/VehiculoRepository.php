@@ -15,4 +15,8 @@ interface VehiculoRepository
     /** Cambia datos identificativos y capacidad; conserva el estado. */
     public function actualizar(int $idVehiculo, array $datos): void;
     public function cambiarEstado(int $idVehiculo, string $nuevoEstado, string $estadoAnterior): void;
+    public function dependenciasVerificadas(): bool;
+    public function tieneViajes(int $idVehiculo): bool;
+    public function tieneMantenimientos(int $idVehiculo): bool;
+    public function eliminar(int $idVehiculo): void;
 }

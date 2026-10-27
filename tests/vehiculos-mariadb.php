@@ -68,7 +68,7 @@ function servicioEnsayo(PDO $pdo): VehiculoService
 function datosEnsayo(string $sufijo): array
 {
     return ['numero_economico' => 'ECO-' . $sufijo, 'placa' => 'A-' . $sufijo . '-A',
-        'descripcion' => 'Autobús sintético', 'capacidad' => 40, 'estado' => 'ACTIVO'];
+        'descripcion' => 'Autobús sintético', 'capacidad' => 25, 'estado' => 'ACTIVO'];
 }
 
 $checks = 0; $caso = 'configuración'; $admin = null; $pdo = null; $otra = null; $baseCreada = false;
@@ -205,11 +205,11 @@ try {
     $mal = datosEnsayo('MAL'); $mal['numero_economico'] = str_repeat('A', 31); $rechazoSql(fn () => $repo->insertar($mal), [1406]);
     $mal = datosEnsayo('MAL'); $mal['descripcion'] = str_repeat('á', 101); $rechazoSql(fn () => $repo->insertar($mal), [1406]);
     $limite = datosEnsayo('LIMITE'); $limite['placa'] = str_repeat('A', 20); $limite['numero_economico'] = str_repeat('É', 30);
-    $limite['descripcion'] = str_repeat('á', 100); $limite['capacidad'] = 65535; $servicio->registrar(1, $limite, '1');
+    $limite['descripcion'] = str_repeat('á', 100); $limite['capacidad'] = 30; $servicio->registrar(1, $limite, '1');
     $assert(count($repo->listar(str_repeat('É', 30))) === 1);
     $limiteLeido = $repo->listar(str_repeat('É', 30))[0];
     $assert($limiteLeido['placa'] === $limite['placa'] && $limiteLeido['numero_economico'] === $limite['numero_economico']
-        && $limiteLeido['descripcion'] === $limite['descripcion'] && (int) $limiteLeido['capacidad'] === 65535);
+        && $limiteLeido['descripcion'] === $limite['descripcion'] && (int) $limiteLeido['capacidad'] === 30);
     $assert((int) $pdo->query("SELECT COUNT(*) FROM vehiculo WHERE estado NOT IN ('ACTIVO','INACTIVO') OR capacidad<=0")->fetchColumn() === 0);
     $mal = datosEnsayo('NULL'); $mal['descripcion'] = null; $repo->insertar($mal); // SQL nullable, aplicación obligatoria.
     $rechazo(fn () => $servicio->registrar(1, $mal, '1'), 422, 'descripcion');

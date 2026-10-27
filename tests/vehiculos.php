@@ -53,7 +53,7 @@ $errorEsperado = static function (Closure $operacion, int $estado, ?string $camp
         return $error;
     }
 };
-$valido = static fn (): array => ['numero_economico' => '  eco-13 ', 'placa' => ' a-00013-a ', 'descripcion' => ' Autobús de prueba ', 'capacidad' => '40'];
+$valido = static fn (): array => ['numero_economico' => '  eco-13 ', 'placa' => ' a-00013-a ', 'descripcion' => ' Autobús de prueba ', 'capacidad' => '25'];
 $fixture = static function (): array {
     $usuarios = new GestionUsuariosFicticia(); $vehiculos = new VehiculosFicticios();
     $admin = new AdministracionVehiculosFicticia($usuarios, $vehiculos);
@@ -64,7 +64,7 @@ try {
     $caso = 'normalización, revisión sin escritura y alta confirmada';
     [$s, $r, $u] = $fixture(); $datos = $valido();
     $resumen = $s->prepararRegistro($datos);
-    $assert($resumen === ['numero_economico' => 'ECO-13', 'placa' => 'A-00013-A', 'descripcion' => 'Autobús de prueba', 'capacidad' => 40, 'estado' => 'ACTIVO']);
+    $assert($resumen === ['numero_economico' => 'ECO-13', 'placa' => 'A-00013-A', 'descripcion' => 'Autobús de prueba', 'capacidad' => 25, 'estado' => 'ACTIVO']);
     $assert(count($r->filas) === 2 && $u->eventos === []);
     foreach ([null, '', '0', 1, true, []] as $confirmacion) { $errorEsperado(fn () => $s->registrar(41, $datos, $confirmacion), 422); }
     $assert(count($r->filas) === 2);
@@ -102,10 +102,10 @@ try {
     $errorEsperado(fn () => $s->prepararRegistro($datos), 422, 'numero_economico');
 
     $caso = 'capacidad y estados estrictos';
-    foreach ([1 => 1, 65535 => 65535, '00040' => 40] as $valor => $esperado) {
+    foreach ([1 => 1, 15 => 15, 25 => 25, 30 => 30, '00030' => 30] as $valor => $esperado) {
         $datos = $valido(); $datos['capacidad'] = $valor; $assert($s->prepararRegistro($datos)['capacidad'] === $esperado);
     }
-    foreach ([null, '', ' ', 0, '000', -1, 65536, '65536', str_repeat('9', 100), '1.0', 1.5, 1.0, '1e2', true, [], '+1', ' 40'] as $capacidad) {
+    foreach ([null, '', ' ', 0, '000', -1, 31, 60, 65535, '65535', 65536, '65536', str_repeat('9', 100), '1.0', 1.5, 1.0, '1e2', true, [], '+1', ' 40'] as $capacidad) {
         $datos = $valido(); $datos['capacidad'] = $capacidad;
         $errorEsperado(fn () => $s->prepararRegistro($datos), 422, 'capacidad');
         $errorEsperado(fn () => $s->modificar(41, 11, $datos), 422, 'capacidad');
@@ -227,7 +227,7 @@ try {
     $pdo = new PdoVehiculoFicticio(); $repo = new PdoVehiculoRepository($pdo); $entrada = "%_!' OR 1=1 --";
     $repo->listar($entrada); $repo->listar(''); $assert($repo->buscar(11) === null); $repo->buscar(11, true);
     $assert(!$repo->existePlaca($entrada)); $repo->existePlaca($entrada, 11); $repo->existeNumeroEconomico($entrada, 11);
-    $datos = ['numero_economico' => 'ECO-99', 'placa' => 'PLACA-99', 'descripcion' => "Autobús ' sintético", 'capacidad' => 40, 'estado' => 'ACTIVO', 'id_vehiculo' => 999, 'intruso' => 'no'];
+    $datos = ['numero_economico' => 'ECO-99', 'placa' => 'PLACA-99', 'descripcion' => "Autobús ' sintético", 'capacidad' => 25, 'estado' => 'ACTIVO', 'id_vehiculo' => 999, 'intruso' => 'no'];
     $repo->insertar($datos); $repo->actualizar(11, $datos); $repo->cambiarEstado(11, 'INACTIVO', 'ACTIVO');
     foreach ($pdo->consultas as $consulta) {
         $assert(!str_contains($consulta['sql'], $entrada) && !str_contains($consulta['sql'], $datos['descripcion']));
@@ -248,6 +248,20 @@ try {
         try { $operacion(); throw new LogicException('Se esperaba conflicto.'); }
         catch (RuntimeException $error) { $assert(!($error instanceof LogicException)); }
     }
+    $caso = 'eliminación física con bloqueos por dependencias y versión';
+    [$s, $r] = $fixture(); $version = $s->prepararEliminacion(11)['version']; $s->eliminar(41, 11, $version, '1');
+    $assert(!isset($r->filas[11]) && isset($r->filas[12]));
+    $errorEsperado(fn () => $s->eliminar(41, 11, $version, '1'), 404);
+    [$s, $r] = $fixture(); $version = $s->prepararEliminacion(11)['version']; $r->viajes[11] = true;
+    $errorEsperado(fn () => $s->eliminar(41, 11, $version, '1'), 409); $assert(isset($r->filas[11]));
+    [$s, $r] = $fixture(); $version = $s->prepararEliminacion(11)['version']; $r->mantenimientos[11] = true;
+    $errorEsperado(fn () => $s->eliminar(41, 11, $version, '1'), 409); $assert(isset($r->filas[11]));
+    [$s, $r] = $fixture(); $version = $s->prepararEliminacion(11)['version']; $r->filas[11]['estado'] = 'INACTIVO';
+    $errorEsperado(fn () => $s->eliminar(41, 11, $version, '1'), 409); $assert(isset($r->filas[11]));
+    [$s, $r] = $fixture(); $version = $s->prepararEliminacion(11)['version']; $r->fallar = 'sql:1451:eliminar';
+    $errorEsperado(fn () => $s->eliminar(41, 11, $version, '1'), 409); $assert(isset($r->filas[11]));
+    [$s, $r] = $fixture(); $r->dependenciasDisponibles = false;
+    $errorEsperado(fn () => $s->prepararEliminacion(11), 503);
     echo "HU-02 vehículos: $checks comprobaciones correctas. Memoria/sesión/PDO simulados; sin conexión a MariaDB.\n";
 } catch (Throwable $error) {
     $linea = preg_match('/^Comprobación fallida en línea [0-9]+\.$/D', $error->getMessage()) === 1 ? ' ' . $error->getMessage() : '';

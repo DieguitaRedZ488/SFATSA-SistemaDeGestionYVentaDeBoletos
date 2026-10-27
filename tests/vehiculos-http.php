@@ -81,7 +81,7 @@ $crear = static function (?int $idActor = 41) use (&$checks): array {
 };
 $valido = static fn (): array => [
     'numero_economico' => ' eco-21 ', 'placa' => ' a-00021-a ',
-    'descripcion' => ' Autobús sintético ', 'capacidad' => '42',
+    'descripcion' => ' Autobús sintético ', 'capacidad' => '25',
 ];
 $respuestaError = static function (Respuesta $respuesta, int $estado, string $noDebeContener) use ($assert): void {
     $assert($respuesta->estado === $estado, 'Estado HTTP esperado ' . $estado . ', recibido ' . $respuesta->estado);
@@ -94,6 +94,7 @@ try {
     $assert($controller->listar()->cabeceras['Location'] === '/' && $fabrica->llamadas === 0);
     [$controller, , , , , $fabrica] = $crear(42);
     $respuestaError($controller->listar(), 403, 'FICTICIO_INTERNO_SENSIBLE');
+    $respuestaError($controller->confirmarEliminacion(['id' => '11']), 403, 'FICTICIO_INTERNO_SENSIBLE');
     $assert($fabrica->llamadas === 0);
     [$controller, , $usuarios, , , $fabrica] = $crear();
     $usuarios->filas[41]['id_rol'] = 13;
@@ -121,6 +122,7 @@ try {
         ['cancelar', [['token' => str_repeat('a', 64)]]],
         ['modificar', [$valido()], ['id' => '11']],
         ['cambiarEstado', [['confirmacion' => '1']], ['id' => '11', 'estado' => 'INACTIVO']],
+        ['eliminar', [['version' => str_repeat('a', 64), 'confirmacion' => '1']], ['id' => '11']],
     ] as $operacion) {
         [$controller, , , , , $fabrica] = $crear();
         $metodo = $operacion[0];
@@ -203,6 +205,25 @@ try {
     $assert($repetido->estado === 409 && $repo->filas[11]['estado'] === 'INACTIVO');
     $assert($controller->modificar($valido() + ['csrf' => $csrf->token(), 'estado' => 'ACTIVO'], ['id' => '11'])->estado === 422);
 
+    $caso = 'confirmación HTTP, CSRF, dependencias y eliminación de vehículo';
+    [$controller, $repo, , $csrf, , , $vistas] = $crear();
+    $confirmacion = $controller->confirmarEliminacion(['id' => '11']);
+    $datosConfirmacion = $vistas->items[0]['datos'];
+    $assert($confirmacion->estado === 200 && $datosConfirmacion['vehiculo']['placa'] === 'A-00011-A');
+    $respuestaError($controller->eliminar(['version' => $datosConfirmacion['version'], 'confirmacion' => '1'], ['id' => '11']), 403, 'FICTICIO_INTERNO_SENSIBLE');
+    $eliminado = $controller->eliminar(
+        ['csrf' => $csrf->token(), 'version' => $datosConfirmacion['version'], 'confirmacion' => '1'], ['id' => '11']
+    );
+    $assert($eliminado->estado === 303 && !isset($repo->filas[11]));
+    $assert($controller->eliminar(
+        ['csrf' => $csrf->token(), 'version' => $datosConfirmacion['version'], 'confirmacion' => '1'], ['id' => '11']
+    )->estado === 404);
+
+    [$controller, $repo, , $csrf, , , $vistas] = $crear();
+    $controller->confirmarEliminacion(['id' => '11']); $version = $vistas->items[0]['datos']['version']; $repo->viajes[11] = true;
+    $bloqueado = $controller->eliminar(['csrf' => $csrf->token(), 'version' => $version, 'confirmacion' => '1'], ['id' => '11']);
+    $assert($bloqueado->estado === 409 && isset($repo->filas[11]));
+
     $caso = 'errores internos controlados y plantillas/rutas condicionadas';
     [$controller, $repo, , , , , $vistas] = $crear();
     $repo->fallar = 'listar';
@@ -216,14 +237,16 @@ try {
         'vehiculos.cancelar' => ['POST'],
         'vehiculos.editar' => ['GET', 'POST'],
         'vehiculos.estado' => ['GET', 'POST'],
+        'vehiculos.eliminar' => ['GET', 'POST'],
     ];
     foreach ($esperadas as $ruta => $metodos) {
         $assert(array_keys($rutas[$ruta]) === $metodos);
     }
-    $assert(!isset($rutas['vehiculos.revisar']['GET']) && !isset($rutas['vehiculos.estado']['DELETE']));
-    $vistasNecesarias = ['listado.php', 'formulario.php', 'confirmacion.php', 'estado.php'];
+    $assert(!isset($rutas['vehiculos.revisar']['GET']) && !isset($rutas['vehiculos.estado']['DELETE'])
+        && !isset($rutas['vehiculos.eliminar']['DELETE']));
+    $vistasNecesarias = ['listado.php', 'formulario.php', 'confirmacion.php', 'estado.php', 'eliminar.php'];
     $directorioVistas = dirname(__DIR__) . '/app/Views/vehiculos';
-    $assert(count(array_filter($vistasNecesarias, static fn (string $vista): bool => is_file($directorioVistas . '/' . $vista))) === 4);
+    $assert(count(array_filter($vistasNecesarias, static fn (string $vista): bool => is_file($directorioVistas . '/' . $vista))) === 5);
     try {
         Respuesta::redirigir('/?ruta=externa');
         $assert(false);

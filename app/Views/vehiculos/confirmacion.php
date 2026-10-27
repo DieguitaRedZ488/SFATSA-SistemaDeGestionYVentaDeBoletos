@@ -1,6 +1,6 @@
 <?php
 $titulo = 'Confirmar registro de vehículo';
-$descripcion = 'Revise los datos normalizados antes de registrar la unidad.';
+$descripcion = 'Revise los datos antes de registrar la unidad.';
 $moduloGestion = 'vehiculos';
 $tokenResumen = $token;
 // tokenCsrf es el CSRF tanto de estos POST como del cierre de sesión del encabezado.
@@ -13,11 +13,11 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
         <?php foreach (['numero_economico' => 'Número económico', 'placa' => 'Placa', 'descripcion' => 'Descripción', 'capacidad' => 'Capacidad (pasajeros)'] as $campo => $etiqueta): ?>
         <div><dt><?= $etiqueta ?></dt><dd><?= $escapar($datos[$campo]) ?></dd></div>
         <?php endforeach; ?>
-        <div><dt>Estado inicial</dt><dd><?= $datos['estado'] === 'ACTIVO' ? 'Activo' : 'Inactivo' ?></dd></div>
+        <div><dt>Estado inicial</dt><dd><span class="status <?= $datos['estado'] === 'ACTIVO' ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono($datos['estado'] === 'ACTIVO' ? 'check-circle' : 'x-circle') ?></span><?= $datos['estado'] === 'ACTIVO' ? 'Habilitado' : 'Deshabilitado' ?></span></dd></div>
     </dl>
 </section>
 <section class="confirm-card" aria-labelledby="confirm-title">
-    <span class="confirm-icon" aria-hidden="true">!</span><span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
+    <span class="confirm-icon" aria-hidden="true"><?= $icono('shield-check') ?></span><span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
     <h2 id="confirm-title">¿Desea registrar este vehículo?</h2>
     <p>El registro aún no se ha guardado. Confirme estos datos o cancele para descartarlos. Para corregirlos, cancele e inicie una nueva captura.</p>
     <div class="confirm-actions">

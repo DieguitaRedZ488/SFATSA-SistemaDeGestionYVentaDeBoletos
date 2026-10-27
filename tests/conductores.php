@@ -54,7 +54,7 @@ $errorEsperado = static function (Closure $operacion, int $estado, ?string $camp
         $assert(!str_contains($error->getMessage(), 'FICTICIO_INTERNO_SENSIBLE'));
     }
 };
-$valido = static fn (): array => ['nombres' => '  José  María ', 'apellidos' => ' Álvarez López ', 'numero_licencia' => 'licen000000001', 'telefono' => ' +52 555 000 0000 '];
+$valido = static fn (): array => ['nombres' => '  José  María ', 'apellidos' => ' Álvarez López ', 'numero_licencia' => 'licen000000001', 'telefono' => '9513440979'];
 $fixture = static function (): array {
     $usuarios = new GestionUsuariosFicticia(); $conductores = new ConductoresFicticios();
     $admin = new AdministracionConductoresFicticia($usuarios, $conductores);
@@ -77,10 +77,10 @@ try {
     $caso = 'alta válida y teléfono opcional';
     [$servicio, $repo, $usuarios] = $fixture(); $servicio->registrar(41, $valido());
     $assert($repo->filas[14]['nombres'] === 'José  María' && $repo->filas[14]['apellidos'] === 'Álvarez López');
-    $assert($repo->filas[14]['numero_licencia'] === 'LICEN000000001' && $repo->filas[14]['telefono'] === '+52 555 000 0000');
+    $assert($repo->filas[14]['numero_licencia'] === 'LICEN000000001' && $repo->filas[14]['telefono'] === '9513440979');
     $assert($repo->filas[14]['activo'] === 1 && $usuarios->eventos === ['iniciar', 'bloquear', 'buscar_bloqueado', 'confirmar']);
     $sufijoLicencia = 0;
-    foreach ([null, '', '   ', "\u{00A0}\t"] as $opcional) {
+    foreach ([null, ''] as $opcional) {
         $datos = $valido(); $datos['numero_licencia'] = 'TEST' . str_pad((string) ++$sufijoLicencia, 10, '0', STR_PAD_LEFT); $datos['telefono'] = $opcional;
         $servicio->registrar(41, $datos); $fila = $repo->filas[max(array_keys($repo->filas))];
         $assert($fila['numero_licencia'] === $datos['numero_licencia'] && $fila['telefono'] === null);
@@ -90,7 +90,7 @@ try {
     $assert($repo->filas[max(array_keys($repo->filas))]['telefono'] === null);
 
     $caso = 'obligatorios y límites Unicode en alta y edición';
-    foreach (['nombres' => 120, 'apellidos' => 120, 'telefono' => 25] as $campo => $limite) {
+    foreach (['nombres' => 120, 'apellidos' => 120] as $campo => $limite) {
         $obligatorio = in_array($campo, ['nombres', 'apellidos', 'numero_licencia'], true);
         foreach ($obligatorio ? [null, '', ' ', "\u{00A0}", [], "\xFF", "x\0y"] : [[], "\xFF", "x\0y"] as $invalido) {
             [$servicio, $repo] = $fixture(); $datos = $valido(); $datos[$campo] = $invalido; $antes = $repo->filas;

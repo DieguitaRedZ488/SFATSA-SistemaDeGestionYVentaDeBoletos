@@ -39,7 +39,7 @@ $fixture = static function (): array {
         static fn () => new RegistroVehiculoService($servicio, $store), $csrf, $store, new Vista(), new AutorizacionService());
     return [$controller, $repo, $csrf, $store, $actor];
 };
-$datos = ['numero_economico'=>' eco-21 ', 'placa'=>' a-00021-a ', 'descripcion'=>' Autobús sintético ', 'capacidad'=>'42'];
+$datos = ['numero_economico'=>' eco-21 ', 'placa'=>' a-00021-a ', 'descripcion'=>' Autobús sintético ', 'capacidad'=>'25'];
 
 try {
     $caso = 'listado, navegación y ausencia de resultados';
@@ -53,6 +53,7 @@ try {
     $assert($x->query('//a[@href="/?ruta=vehiculos.editar&id=11"]')->length === 1);
     $assert($x->query('//a[@href="/?ruta=vehiculos.estado&id=11&estado=INACTIVO"]')->length === 1);
     $assert($x->query('//a[@href="/?ruta=vehiculos.estado&id=12&estado=ACTIVO"]')->length === 1);
+    $assert($x->query('//a[@href="/?ruta=vehiculos.eliminar&id=11" and text()="Eliminar"]')->length === 1);
     $assert(!str_contains($r->cuerpo, 'Página 1 de 1'));
     $assert(str_contains($controller->listar(['q'=>'00011']) ->cuerpo, 'A-00011-A'));
     $assert(str_contains($controller->listar(['q'=>'ausente'])->cuerpo, 'No se encontraron vehículos'));
@@ -66,7 +67,7 @@ try {
     $assert($r->estado === 200 && $x->query('//form[@action="/?ruta=vehiculos.revisar" and @method="post"]')->length === 1);
     $assert($x->query('//select[@name="estado"]/option[@selected and @value="ACTIVO"]')->length === 1);
     $assert($x->query('//select[@name="estado"]/option')->length === 2 && !str_contains($r->cuerpo,'MANTENIMIENTO'));
-    $assert(str_contains($r->cuerpo,'Revisar datos') && $x->query('//input[@name="capacidad" and @min="1" and @max="65535" and @step="1"]')->length === 1);
+    $assert(str_contains($r->cuerpo,'Revisar datos') && $x->query('//input[@name="capacidad" and @min="1" and @max="30" and @step="1"]')->length === 1);
     $r = $controller->editar(['id'=>'12']); $x = $documento($r->cuerpo);
     $assert($r->estado === 200 && $x->query('//*[@name="estado"]')->length === 0);
     $assert($x->query('//form[@action="/?ruta=vehiculos.editar&id=12" and @method="post"]')->length === 1);
@@ -113,14 +114,15 @@ try {
     $assert($controller->cambiarEstado(['csrf'=>$csrf->token(),'confirmacion'=>'1'],['id'=>'11','estado'=>'INACTIVO'])->estado === 303);
     $assert($repo->filas[11]['estado'] === 'INACTIVO');
 
-    $caso = 'escape de salida de las cuatro vistas';
+    $caso = 'escape de salida de vistas y confirmación de eliminación POST';
     $ataque = '\"><script>alert(1)</script><img src=x onerror=alert(1)>';
     $repo->filas[11]['numero_economico'] = $ataque; $repo->filas[11]['placa'] = $ataque; $repo->filas[11]['descripcion'] = $ataque;
     $store->guardar('vehiculos_exito', $ataque);
     $htmls = [$controller->listar()->cuerpo, $controller->editar(['id'=>'11'])->cuerpo,
-        $controller->confirmarEstado(['id'=>'11','estado'=>'ACTIVO'])->cuerpo];
+        $controller->confirmarEstado(['id'=>'11','estado'=>'ACTIVO'])->cuerpo,
+        $controller->confirmarEliminacion(['id'=>'11'])->cuerpo];
     $htmls[] = (new Vista())->renderizar('vehiculos/confirmacion', ['usuario'=>$actor,'tokenCsrf'=>$csrf->token(),'token'=>str_repeat('a',64),
-        'datos'=>['numero_economico'=>$ataque,'placa'=>$ataque,'descripcion'=>$ataque,'capacidad'=>42,'estado'=>'ACTIVO']]);
+        'datos'=>['numero_economico'=>$ataque,'placa'=>$ataque,'descripcion'=>$ataque,'capacidad'=>25,'estado'=>'ACTIVO']]);
     foreach ($htmls as $html) {
         $x = $documento($html);
         $assert(!str_contains($html, '<script>alert(1)</script>') && str_contains($html, '&lt;script&gt;'));
@@ -128,6 +130,10 @@ try {
         $assert($x->query('//nav/a[contains(@class,"active")]')->length === 1);
         foreach ($x->query('//form[@method="post"]') as $form) { $assert($x->query('.//input[@name="csrf"]', $form)->length === 1); }
     }
+    $x = $documento($htmls[3]);
+    $assert($x->query('//form[@action="/?ruta=vehiculos.eliminar&id=11" and @method="post"]')->length === 1);
+    $assert($x->query('//input[@type="checkbox" and @name="confirmacion" and @required]')->length === 1);
+    $assert($x->query('//input[@name="version"]')->length === 1 && str_contains($htmls[3], 'La operación se bloqueará'));
     $caso = 'acceso desde Inicio según rol';
     foreach ([true,false] as $permiso) {
         $html = (new Vista())->renderizar('inicio',['usuario'=>$actor,'token'=>$csrf->token(),'puedeGestionar'=>$permiso]);

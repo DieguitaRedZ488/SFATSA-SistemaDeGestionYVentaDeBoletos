@@ -13,6 +13,8 @@ final class VehiculosFicticios implements VehiculoRepository
         12 => ['id_vehiculo' => 12, 'numero_economico' => 'ECO-12', 'placa' => 'B-00012-B', 'descripcion' => 'Otro autobús sintético', 'capacidad' => 30, 'estado' => 'INACTIVO'],
     ];
     public array $eventos = [];
+    public array $viajes = [], $mantenimientos = [];
+    public bool $dependenciasDisponibles = true;
     public ?string $fallar = null;
     public ?Closure $enTransaccion = null;
 
@@ -23,6 +25,11 @@ final class VehiculosFicticios implements VehiculoRepository
             throw new RuntimeException('ESCRITURA_FUERA_TRANSACCION_FICTICIA');
         }
         if ($this->fallar === $nombre) { throw new RuntimeException('FICTICIO_INTERNO_SENSIBLE'); }
+        if ($escritura && preg_match('/\Asql:([0-9]+):([a-z_]+)\z/', $this->fallar ?? '', $coincidencia)) {
+            $error = new PDOException('FICTICIO_INTERNO_SENSIBLE');
+            $error->errorInfo = ['23000', (int) $coincidencia[1], "Referencia ficticia para '" . $coincidencia[2] . "'"];
+            throw $error;
+        }
         if ($escritura && str_starts_with($this->fallar ?? '', 'duplicado:')) {
             $error = new PDOException('FICTICIO_INTERNO_SENSIBLE');
             $error->errorInfo = ['23000', 1062, "Duplicate entry 'FICTICIO' for key '" . substr($this->fallar, 10) . "'"];
@@ -68,6 +75,10 @@ final class VehiculosFicticios implements VehiculoRepository
         if ($this->filas[$idVehiculo]['estado'] !== $estadoAnterior) { throw new RuntimeException('CONFLICTO_FICTICIO'); }
         $this->filas[$idVehiculo]['estado'] = $nuevoEstado;
     }
+    public function dependenciasVerificadas(): bool { $this->evento('dependencias'); return $this->dependenciasDisponibles; }
+    public function tieneViajes(int $idVehiculo): bool { $this->evento('viajes'); return isset($this->viajes[$idVehiculo]); }
+    public function tieneMantenimientos(int $idVehiculo): bool { $this->evento('mantenimientos'); return isset($this->mantenimientos[$idVehiculo]); }
+    public function eliminar(int $idVehiculo): void { $this->evento('eliminar', true); unset($this->filas[$idVehiculo]); }
 }
 
 /** Coordina dos repositorios ficticios bajo la misma transacción en memoria. */

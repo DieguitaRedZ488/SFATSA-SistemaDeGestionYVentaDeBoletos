@@ -102,4 +102,55 @@ final class PdoVehiculoRepository implements VehiculoRepository
             throw new RuntimeException('Operación no disponible.');
         }
     }
+
+    public function dependenciasVerificadas(): bool
+    {
+        $statement = $this->connection->prepare(
+            'SELECT k.TABLE_NAME, k.COLUMN_NAME, r.DELETE_RULE'
+            . ' FROM information_schema.KEY_COLUMN_USAGE k'
+            . ' INNER JOIN information_schema.REFERENTIAL_CONSTRAINTS r'
+            . ' ON r.CONSTRAINT_SCHEMA = k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME = k.CONSTRAINT_NAME'
+            . ' AND r.TABLE_NAME = k.TABLE_NAME'
+            . ' WHERE k.CONSTRAINT_SCHEMA = DATABASE() AND k.REFERENCED_TABLE_NAME = :tabla'
+            . ' AND k.REFERENCED_COLUMN_NAME IS NOT NULL'
+        );
+        $statement->execute(['tabla' => 'vehiculo']);
+        $reales = [];
+        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $fila) {
+            $clave = $fila['TABLE_NAME'] . '.' . $fila['COLUMN_NAME'];
+            if (!in_array($clave, ['mantenimiento.id_vehiculo', 'viaje.id_vehiculo'], true)
+                || !in_array(strtoupper((string) $fila['DELETE_RULE']), ['RESTRICT', 'NO ACTION'], true)) {
+                return false;
+            }
+            $reales[] = $clave;
+        }
+        sort($reales);
+        return $reales === ['mantenimiento.id_vehiculo', 'viaje.id_vehiculo'];
+    }
+
+    public function tieneViajes(int $idVehiculo): bool
+    {
+        $statement = $this->connection->prepare('SELECT id_viaje FROM viaje WHERE id_vehiculo = :id LIMIT 1');
+        $statement->execute(['id' => $idVehiculo]);
+        return $statement->fetch() !== false;
+    }
+
+    public function tieneMantenimientos(int $idVehiculo): bool
+    {
+        $statement = $this->connection->prepare('SELECT id_mantenimiento FROM mantenimiento WHERE id_vehiculo = :id LIMIT 1');
+        $statement->execute(['id' => $idVehiculo]);
+        return $statement->fetch() !== false;
+    }
+
+    public function eliminar(int $idVehiculo): void
+    {
+        if (!$this->connection->inTransaction()) {
+            throw new RuntimeException('Operación no disponible.');
+        }
+        $statement = $this->connection->prepare('DELETE FROM vehiculo WHERE id_vehiculo = :id');
+        $statement->execute(['id' => $idVehiculo]);
+        if ($statement->rowCount() !== 1) {
+            throw new RuntimeException('Operación no disponible.');
+        }
+    }
 }

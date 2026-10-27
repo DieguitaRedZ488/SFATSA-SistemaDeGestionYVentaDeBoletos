@@ -304,6 +304,53 @@ final class VehiculoController
             : 'Vehículo desactivado correctamente.');
     }
 
+    public function confirmarEliminacion(array $consulta = []): Respuesta
+    {
+        $usuario = $this->autorizar();
+        if ($usuario instanceof Respuesta) {
+            return $usuario;
+        }
+        try {
+            $vehiculo = ($this->crearServicio)()->prepararEliminacion($consulta['id'] ?? null);
+        } catch (ErrorGestionVehiculos $error) {
+            return $this->mensaje('Vehículo no disponible', $error->getMessage(), $error->estado);
+        }
+        return $this->vista('vehiculos/eliminar', [
+            'usuario' => $usuario,
+            'token' => $this->csrf->token(),
+            'vehiculo' => $vehiculo,
+            'version' => $vehiculo['version'],
+        ]);
+    }
+
+    public function eliminar(array $datos, array $consulta = []): Respuesta
+    {
+        $usuario = $this->autorizar();
+        if ($usuario instanceof Respuesta) {
+            return $usuario;
+        }
+        if (($rechazo = $this->comprobarCsrf($datos)) !== null) {
+            return $rechazo;
+        }
+        try {
+            $idVehiculo = VehiculoService::id($consulta['id'] ?? null);
+            foreach (array_keys($datos) as $campo) {
+                if (!in_array($campo, ['csrf', 'version', 'confirmacion'], true)) {
+                    return $this->mensaje('Solicitud no válida', 'La solicitud de eliminación contiene datos no permitidos.', 400);
+                }
+            }
+            ($this->crearServicio)()->eliminar(
+                $usuario->idUsuario,
+                $idVehiculo,
+                $datos['version'] ?? null,
+                $datos['confirmacion'] ?? null
+            );
+        } catch (ErrorGestionVehiculos $error) {
+            return $this->mensaje('No se pudo eliminar el vehículo', $error->getMessage(), $error->estado);
+        }
+        return $this->exito('Vehículo eliminado correctamente.');
+    }
+
     private function exito(string $mensaje): Respuesta
     {
         $this->store->guardar('vehiculos_exito', $mensaje);

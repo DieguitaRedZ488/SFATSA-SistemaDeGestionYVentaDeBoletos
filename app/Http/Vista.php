@@ -15,10 +15,19 @@ final class Vista
             'login', 'inicio', 'mensaje', 'usuarios/listado', 'usuarios/formulario', 'usuarios/desactivar',
             'usuarios/activar', 'conductores/listado', 'conductores/formulario', 'conductores/estado',
         ];
-        foreach (['listado', 'formulario', 'confirmacion', 'estado'] as $vistaVehiculos) {
+        foreach (['listado', 'formulario', 'confirmacion', 'estado', 'eliminar'] as $vistaVehiculos) {
             $plantillaVehiculos = 'vehiculos/' . $vistaVehiculos;
             if (is_file(dirname(__DIR__) . '/Views/' . $plantillaVehiculos . '.php')) {
                 $permitidas[] = $plantillaVehiculos;
+            }
+        }
+        if (!in_array($plantilla, $permitidas, true)) {
+            // Allowlist fija HU-04; no habilita rutas ni genera plantillas ausentes.
+            foreach (IntegracionHU04::PLANTILLAS as $modulo => $plantillasHU04) {
+                foreach ($plantillasHU04 as $nombreHU04) {
+                    $candidata = $modulo . '/' . $nombreHU04;
+                    if (is_file(dirname(__DIR__) . '/Views/' . $candidata . '.php')) { $permitidas[] = $candidata; }
+                }
             }
         }
         if (!in_array($plantilla, $permitidas, true)) {

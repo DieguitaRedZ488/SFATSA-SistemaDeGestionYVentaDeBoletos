@@ -12,7 +12,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
         <input type="hidden" name="ruta" value="vehiculos">
         <label class="visually-hidden" for="busqueda">Buscar por placa o número económico</label>
         <input class="form-control field__control search-control" id="busqueda" name="q" type="search" value="<?= $escapar($busqueda) ?>" placeholder="Placa o número económico" maxlength="60" data-max-caracteres="30" aria-describedby="busqueda-ayuda">
-        <button class="btn button button--secondary" type="submit">Buscar</button>
+        <button class="btn button button--secondary" type="submit"><?= $icono('search') ?> Buscar</button>
         <?php if ($busqueda !== ''): ?><a class="text-action" href="/?ruta=vehiculos">Limpiar búsqueda</a><?php endif; ?>
     </form>
     <a class="btn button button--primary" href="/?ruta=vehiculos.registrar">Registrar vehículo</a>
@@ -21,7 +21,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
 <section class="table-card" aria-labelledby="vehiculos-title">
     <h2 class="visually-hidden" id="vehiculos-title">Vehículos registrados</h2>
     <?php if ($vehiculos === []): ?>
-    <div class="empty-state"><h3><?= $busqueda === '' ? 'No hay vehículos registrados' : 'No se encontraron vehículos' ?></h3><p><?= $busqueda === '' ? 'Use Registrar vehículo para dar de alta una unidad.' : 'Revise la placa o el número económico y vuelva a buscar.' ?></p></div>
+    <div class="empty-state"><span class="empty-state__icon"><?= $icono('search') ?></span><h3><?= $busqueda === '' ? 'No hay vehículos registrados' : 'No se encontraron vehículos' ?></h3><p><?= $busqueda === '' ? 'Use Registrar vehículo para dar de alta una unidad.' : 'Revise la placa o el número económico y vuelva a buscar.' ?></p></div>
     <?php else: ?>
     <p class="mobile-table-note" id="tabla-ayuda">En pantallas pequeñas puede desplazar la tabla horizontalmente.</p>
     <div class="table-responsive" tabindex="0" role="region" aria-label="Tabla de vehículos" aria-describedby="tabla-ayuda">
@@ -35,8 +35,8 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
                     <td class="nombre-usuario"><?= $escapar($vehiculo['placa']) ?></td>
                     <td class="nombre-completo"><?= $escapar($vehiculo['descripcion'] ?? 'Sin descripción registrada') ?></td>
                     <td><?= $escapar($vehiculo['capacidad']) ?> pasajeros</td>
-                    <td><span class="status <?= $activo ? 'status--activo' : 'status--inactivo' ?>"><?= $activo ? 'Activo' : 'Inactivo' ?></span></td>
-                    <td><div class="table-actions"><a class="text-action" href="/?ruta=vehiculos.editar&amp;id=<?= $id ?>" aria-label="Editar vehículo <?= $escapar($vehiculo['numero_economico']) ?>">Editar</a><a class="text-action" href="/?ruta=vehiculos.estado&amp;id=<?= $id ?>&amp;estado=<?= $activo ? 'INACTIVO' : 'ACTIVO' ?>" aria-label="<?= $activo ? 'Desactivar' : 'Activar' ?> vehículo <?= $escapar($vehiculo['numero_economico']) ?>"><?= $activo ? 'Desactivar' : 'Activar' ?></a></div></td>
+                    <td><span class="status <?= $activo ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono($activo ? 'check-circle' : 'x-circle') ?></span><?= $activo ? 'Habilitado' : 'Deshabilitado' ?></span></td>
+                    <td><div class="table-actions"><a class="text-action" href="/?ruta=vehiculos.editar&amp;id=<?= $id ?>" aria-label="Editar vehículo <?= $escapar($vehiculo['numero_economico']) ?>"><?= $icono('pencil') ?> Editar</a><a class="text-action" href="/?ruta=vehiculos.estado&amp;id=<?= $id ?>&amp;estado=<?= $activo ? 'INACTIVO' : 'ACTIVO' ?>" aria-label="<?= $activo ? 'Deshabilitar' : 'Habilitar' ?> vehículo <?= $escapar($vehiculo['numero_economico']) ?>"><?= $activo ? 'Deshabilitar' : 'Habilitar' ?></a><a class="text-action text-action--danger" href="/?ruta=vehiculos.eliminar&amp;id=<?= $id ?>" aria-label="Eliminar vehículo <?= $escapar($vehiculo['numero_economico']) ?>"><?= $icono('trash') ?> Eliminar</a></div></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
