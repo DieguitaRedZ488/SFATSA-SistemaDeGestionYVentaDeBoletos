@@ -4,7 +4,7 @@ $descripcion = $edicion ? 'Edite los datos y el rol de la cuenta seleccionada.' 
 $accion = $edicion ? '/?ruta=usuarios.editar&id=' . (int) $idUsuario : '/?ruta=usuarios.registrar';
 require __DIR__ . '/layout-inicio.php';
 ?>
-<a class="back-link" href="/?ruta=usuarios">← Volver a Gestión de usuarios</a>
+<a class="back-link" href="/?ruta=usuarios"><?= $icono('arrow-right') ?> Volver a Gestión de usuarios</a>
 <form class="form-card" action="<?= $escapar($accion) ?>" method="post" data-form-acceso data-form-usuario>
     <input type="hidden" name="csrf" value="<?= $escapar($token) ?>">
     <div class="form-card__header"><h2>Información general</h2><p>Los campos marcados con * son obligatorios.</p></div>

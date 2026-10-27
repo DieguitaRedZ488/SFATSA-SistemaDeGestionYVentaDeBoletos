@@ -1,3 +1,4 @@
+<?php require __DIR__ . '/iconos.php'; ?>
 <!doctype html>
 <html lang="es">
 <head>
@@ -10,6 +11,11 @@
     <?php if ($estilosUsuarios ?? false): ?>
         <link rel="stylesheet" href="/assets/css/usuarios.css">
         <script src="/assets/js/usuarios.js" defer></script>
+    <?php endif; ?>
+    <?php if ($scriptRutas ?? false): ?><script src="/assets/js/rutas.js" defer></script><?php endif; ?>
+    <?php if ($capturaPlacaVehiculo ?? false): ?>
+        <link rel="stylesheet" href="/assets/css/vehiculos-placa.css">
+        <script src="/assets/js/vehiculos-placa.js" defer></script>
     <?php endif; ?>
 </head>
 <body class="<?= $escapar($claseBody ?? '') ?>">

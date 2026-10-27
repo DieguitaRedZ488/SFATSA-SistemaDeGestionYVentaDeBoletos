@@ -13,7 +13,7 @@ Archivos:
 
 **No reejecutar UP en sfatza: el cambio ya está aplicado.** Los scripts UP/DOWN se mantienen idénticos a la preparación revisada; sus comentarios PREPARADA, NO EJECUTADA son históricos y no representan el estado operativo de esta revisión. El estado de aplicación se registra en este README y los documentos del sprint, sin editar los artefactos SQL después de su aplicación reportada.
 
-Cualquier nueva ejecución, incluida una eventual reversión, necesita autorización explícita propia. Los archivos contienen DDL y comentarios, no un ejecutor ni verificaciones automáticas. No ejecutarlos como lotes desatendidos, al iniciar la aplicación o al correr pruebas. No se informó que DOWN hubiera sido ensayado o aplicado.
+Cualquier nueva ejecución, incluida una eventual reversión, necesita autorización explícita propia. Los archivos de 20261013_001 contienen DDL y comentarios, no un ejecutor ni verificaciones automáticas. La migración 20261027_003, descrita al final, sí incluye guardas automáticas en un bloque anónimo. No ejecutarlos como lotes desatendidos, al iniciar la aplicación o al correr pruebas. No se informó que DOWN hubiera sido ensayado o aplicado.
 
 ## Propósito y contrato
 
@@ -23,7 +23,7 @@ Destino acordado: sfatza, MariaDB 12.0.2, InnoDB, charset utf8mb4 y collation ut
 
 `../install.sql` es un inicializador separado de las migraciones históricas. La lectura de `sfatza` mediante `SHOW CREATE TABLE` e `information_schema` confirmó 15 tablas InnoDB, charset/collation `utf8mb4`/`utf8mb4_uca1400_ai_ci` y 22 columnas de clave foránea con reglas `RESTRICT` para UPDATE y DELETE. El archivo inicial reproduce esas tablas, índices, claves, checks y tipos; elimina los valores incidentales de `AUTO_INCREMENT` observados en la base existente.
 
-Para que una instalación vacía nazca con el contrato actual, el inicializador incluye el resultado de 20261013_001 (`usuario` y `conductor` con `nombres` y `apellidos`) y el objetivo de 20261013_002 (`conductor.numero_licencia VARCHAR(40) NOT NULL`, conservando el índice UNIQUE). También inserta únicamente los catálogos consultados por nombre/estado: roles, métodos de pago y tipos de servicio. No inserta usuarios, hashes, conductores ni datos operativos. En una instalación nueva no se ejecutan estas migraciones después del inicializador.
+Para que una instalación vacía nazca con el contrato actual, el inicializador incluye el resultado de 20261013_001 (`usuario` y `conductor` con `nombres` y `apellidos`) y el objetivo de 20261013_002 (`conductor.numero_licencia VARCHAR(40) NOT NULL`, conservando el índice UNIQUE). También inserta únicamente los catálogos consultados por nombre/estado: roles, métodos de pago y tipos de servicio. No inserta usuarios, hashes, conductores ni datos operativos. El inicializador incorpora también el objetivo de 20261027_003: vehiculo.estado solo ACTIVO/INACTIVO. En una instalación nueva no se ejecutan estas migraciones después del inicializador.
 
 El inicializador está destinado exclusivamente a una base nueva que aún no exista. No es seguro usarlo para actualizar, completar o restaurar una instalación existente. Para bases existentes, 20261013_001 está reportada como aplicada en `sfatza`; la consulta de solo lectura de esta preparación observó `numero_licencia` nullable, por lo que 20261013_002 permanece sin aplicar. Seguir únicamente el procedimiento correspondiente más abajo y obtener autorización explícita antes de cualquier DDL.
 
@@ -245,3 +245,141 @@ Ante fallo, desconexión o resultado incierto, mantener suspendidos los escritor
 DOWN requiere autorización explícita independiente, ensayo/restauración comprobados y confirmación de que la aplicación y consumidores toleran NULL. Revisar cambios de esquema posteriores y suspender escritores; después aplicar una sola vez el [DOWN 20261013_002](20261013_002_licencia_conductor_obligatoria.down.sql) y verificar que la columna permite NULL/DEFAULT NULL y que charset, collation e índice UNIQUE siguen intactos. La validación de la aplicación sigue exigiendo licencia, aunque el DDL permita NULL.
 
 Si se necesita recuperar desde respaldo, primero ensayar en aislamiento. Una recuperación en producción exige plan aprobado que preserve todas las escrituras posteriores y comparación de datos; el respaldo no es una orden para sobrescribir. No se han creado ni corregido licencias en la base real, y la inspección de solo lectura no equivale a aprobación de ejecución.
+
+
+## Migración 20261027_003 — estados ACTIVO/INACTIVO de vehículos
+
+**APLICADA Y VERIFICADA EN sfatza LOCAL DE DESARROLLO (2026-10-27).** No repetir UP en esta base; el estado de otros equipos debe comprobarse individualmente. Los encabezados de los SQL son históricos y se conservan idénticos a los artefactos ensayados. UP/DOWN corregidos pasaron 33 comprobaciones reales en MariaDB 12.0.2. Posteriormente se completaron el respaldo real, su restauración aislada y la aplicación única de UP, con verificaciones anteriores y posteriores descritas al final. DOWN en sfatza no se ejecutó y requiere autorización independiente.
+
+- [UP](20261027_003_vehiculo_estados_activo_inactivo.up.sql): de ENUM('ACTIVO','MANTENIMIENTO','INACTIVO') a ENUM('ACTIVO','INACTIVO'), NOT NULL DEFAULT 'ACTIVO'.
+- [DOWN](20261027_003_vehiculo_estados_activo_inactivo.down.sql): recupera exactamente el ENUM original y su default, sin reconstruir datos históricos.
+- install.sql: únicamente la definición de estado cambia para instalaciones nuevas. No usar el inicializador para migrar la base existente. Las migraciones 001/002 son independientes; no ejecutarlas en cadena por esta autorización.
+
+### Evidencia de partida y referencias
+
+Inspección de solo lectura previa, 2026-10-27: sfatza en MariaDB 12.0.2, tablas InnoDB y utf8mb4_uca1400_ai_ci. Cero vehículos ACTIVO/MANTENIMIENTO/INACTIVO y cero filas de mantenimiento/viaje. Vehiculo coincide con el esquema anterior; FK fk_mant_vehiculo y fk_viaje_vehiculo referencian id_vehiculo con UPDATE/DELETE RESTRICT. Los metadatos visibles no mostraron triggers/vistas/rutinas/eventos relacionados, sin descartar objetos no visibles o consumidores externos. Es una instantánea histórica: repetir inmediatamente antes del DDL. En esta preparación no se consultó de nuevo MariaDB.
+
+Búsqueda textual de referencias antes de preparar: sin uso del estado MANTENIMIENTO en PHP, rutas, configuración, JS propio o pruebas; la definición antigua estaba en install.sql. La tabla mantenimiento y fk_mant_vehiculo no son usos del valor del ENUM y deben conservarse. No hay semillas de vehículos que convertir. Documentación académica/diagramas y documentación privada pueden mencionarlo como estado anterior: no alterar entregables. La planificación privada distingue estado real anterior, objetivo y futura aplicación. Si aparecen otros consumidores, revisarlos antes de ejecutar, sin cambiarlos automáticamente.
+
+### Guardas automáticas de UP/DOWN
+
+El cliente MariaDB debe interpretar DELIMITER. Cada archivo contiene una sola sentencia compuesta BEGIN NOT ATOMIC con SIGNAL SQLSTATE '45000', sin procedimiento persistente, tabla auxiliar ni ejecutor PHP. El único ALTER se encuentra dentro de la rama segura; no ejecutar una selección parcial del archivo ni separar el ALTER de sus guardas. Una guarda fallida termina el bloque; no hay un ALTER independiente posterior. El operador debe detenerse ante cualquier error, incluso si usa un cliente que permite continuar. Prohibido --force o ignorar errores/avisos.
+
+Comprobaciones automáticas:
+
+1. Base seleccionada explícitamente: sfatza o nombre cuyo prefijo literal sea sfatza_s02_estados_ensayo_. No hay USE ni sfatza codificada en el ALTER; el nombre se comprueba mediante DATABASE(). Así se ensaya el MISMO archivo, sin sustituir nombres que puedan dirigirlo a la base real.
+2. Servidor MariaDB, sesión dedicada autocommit=1 sin transacción abierta; modo STRICT_TRANS_TABLES o STRICT_ALL_TABLES. La versión objetivo es 12.0.2; otras versiones requieren revisión/ensayo propios, aunque la guarda de producto no fija una versión exacta.
+3. foreign_key_checks=1 y check_constraint_checks=1. No desactivarlos para facilitar el DDL.
+4. vehiculo existe como tabla base InnoDB.
+5. Columna estado con el ENUM de origen exacto para esa dirección, NOT NULL, DEFAULT 'ACTIVO', utf8mb4/utf8mb4_uca1400_ai_ci y sin atributos extra/comentario que MODIFY pudiera perder. UP repetido o ejecutado tras install.sql nuevo falla deliberadamente; DOWN exige previamente el esquema de UP.
+6. Ningún estado NULL ni distinto, por comparación binaria del texto, de ACTIVO/INACTIVO. UP bloquea MANTENIMIENTO, cadena vacía de error ENUM u otro incompatible; no convierte/elimina filas. DOWN también rechaza datos inválidos en vez de normalizarlos.
+
+Estas guardas NO certifican respaldo, autorización, esquema completo ni ausencia de escritores, y no cierran la carrera entre el SELECT y el DDL. Suspender TODOS los escritores y cambios de esquema desde antes del preflight hasta después de verificar es obligatorio. Comparar manualmente índices, CHECK, FK entrantes y demás columnas con el manifiesto antes/después. El script no los modifica ni desactiva.
+
+### Procedimiento de respaldo privado y ensayo aislado
+
+Este procedimiento se completó para la aplicación local registrada al final. Se conserva como referencia para otros ambientes; no autoriza repetir operaciones en sfatza.
+
+1. Obtener autorización para respaldo/restauración y ensayo, responsable y ventana; elegir una instancia aislada y una base nueva con prefijo sfatza_s02_estados_ensayo_, sin reutilizar ni limpiar bases existentes por suposición. Verificar host/puerto/base con el responsable y revisar credenciales privadas fuera de Git. La cuenta de la aplicación no debe convertirse en cuenta DDL.
+2. Suspender aplicación, trabajos programados y otros escritores/DDL. Inventariar definición de vehiculo/mantenimiento/viaje, PK/UNIQUE/CHECK/FK, conteos, estados por texto y dependencias visibles. La visibilidad limitada del usuario de aplicación no sustituye una auditoría administrativa.
+3. Usar mariadb-dump compatible con MariaDB 12.0.2 y una cuenta autorizada: esquema/datos de sfatza, --single-transaction, --routines, --events, --triggers y --hex-blob cuando corresponda. No --databases ni --all-databases para un volcado destinado a restauración con otro nombre. Revisar opciones de esa versión antes de usarlo. Introducir contraseña mediante prompt protegido o mecanismo privado aprobado, nunca en argumentos/documentación. Guardar con --result-file en directorio privado externo al repositorio y public/, sin redirección de texto PowerShell que recodifique el SQL. Usar herramientas compatibles ya instaladas; este procedimiento no requiere dependencias nuevas en el proyecto.
+4. Registrar privadamente fecha, versión de cliente/servidor, alcance, código de salida, tamaño no nulo y SHA-256 del respaldo. Checksum prueba identidad, no restaurabilidad. Capturar también objetos/permisos necesarios para recuperar el servicio sin publicar secretos; el dump de una base no incluye automáticamente cuentas/permisos globales.
+5. Revisar privadamente el dump por CREATE DATABASE/USE, referencias calificadas sfatza y objetos que podrían apuntar a la base real; restaurar preferentemente en instancia separada donde sfatza real no exista y la cuenta no tenga acceso a ella. Seleccionar base aislada no neutraliza nombres calificados. No ejecutar reemplazos ciegos ni importar un dump con destino no comprobado.
+6. Con autorización separada para crear/restaurar ese ambiente, restaurar con cliente compatible, comprobar objetos/datos y poder recuperar también mantenimiento/viaje/FK. La restauración debe finalizar sin errores y concordar con el manifiesto. Una copia de esquema vacía no acredita restaurabilidad de un respaldo con datos.
+7. En fixtures aislados y expresamente autorizados, ensayar: origen vacío; origen con ACTIVO e INACTIVO; origen con MANTENIMIENTO que DEBE fallar antes del ALTER; ausencia de base seleccionada; base no permitida; esquema/default distinto; controles desactivados o modo no estricto; repetición UP. Para cadena vacía/NULL, solo si un fixture negativo autorizado lo permite: nunca relajar la base real para fabricarlos.
+8. Ejecutar el archivo UP completo solo contra el destino aislado validado, con cliente que entienda DELIMITER y sin --force. Revisar errores y avisos. Comparar IDs y etiquetas por fila, no solo conteos: INACTIVO cambia de ordinal interno 3 a 2, pero debe seguir siendo el texto INACTIVO. COPY evita solicitar una alteración solo de metadatos ante cambio de posiciones. No se acepta conversión silenciosa, pérdida de datos ni aviso no explicado.
+9. Verificar ENUM/default/charset/collation, conteos, PK/UNIQUE/CHECK/FK, tabla mantenimiento intacta y rechazo de MANTENIMIENTO mediante operación sintética autorizada SOLO en la base aislada. Verificar que la creación de tablas nuevas desde install.sql, cuando se autorice ensayarla, nace con el objetivo y no requiere UP. No ejecutar install.sql en la restauración ni en sfatza existente.
+10. Ensayar DOWN con permiso propio y comparar de nuevo etiquetas/IDs (INACTIVO vuelve a ordinal 3). Debe restaurar el tipo original y dejar intactas tablas/FK/datos. Probar una ida/vuelta controlada; ampliar el ENUM no crea mantenimientos ni cambia por sí solo el estado de una fila.
+
+### Procedimiento de preflight y ejecución controlada
+
+Para nuevas ejecuciones autorizadas, repetir metadatos y conteos con todos los escritores suspendidos. Las siguientes son consultas de referencia; la aplicación local y sus comprobaciones efectivas se registran al final:
+
+```sql
+SELECT DATABASE(), VERSION(), @@sql_mode, @@autocommit, @@in_transaction;
+SELECT @@foreign_key_checks, @@check_constraint_checks;
+SELECT COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, CHARACTER_SET_NAME,
+       COLLATION_NAME, EXTRA, COLUMN_COMMENT
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vehiculo'
+  AND COLUMN_NAME = 'estado';
+SELECT estado, COUNT(*) AS cantidad FROM vehiculo GROUP BY estado;
+SELECT COUNT(*) AS incompatibles FROM vehiculo
+WHERE estado IS NULL
+   OR BINARY CAST(estado AS CHAR) NOT IN (BINARY 'ACTIVO', BINARY 'INACTIVO');
+SHOW CREATE TABLE vehiculo;
+SHOW CREATE TABLE mantenimiento;
+SHOW CREATE TABLE viaje;
+```
+
+No continuar si incompatibles es distinto de cero, falta respaldo ensayado, cambia el esquema completo o quedan escritores activos. Resolver filas incompatibles es decisión del responsable con autorización independiente; jamás UPDATE de sustitución incluido en la migración.
+
+Con permiso de ejecución real, seleccionar explícitamente sfatza en cliente dedicado, confirmar destino y aplicar UNA dirección completa con guardas y DELIMITER. No ejecutar UP y DOWN como un solo lote. El bloque anónimo NO es transacción atómica: ALTER causa commits implícitos; no usar BEGIN/ROLLBACK como recuperación del DDL. Se propone ALGORITHM=COPY y LOCK=EXCLUSIVE, con espacio libre/tiempo dimensionados; bloqueará lecturas/escrituras durante fases relevantes. La cláusula WAIT no se utiliza dentro del bloque: MariaDB 12.0.2 la rechaza con error 1314. El operador debe fijar lock_wait_timeout=30 en la sesión dedicada antes de UP; limita espera de metadatos, no duración total ni garantiza ausencia de bloqueo. Una transacción lectora antigua puede impedir adquirir el bloqueo. No matar sesiones externas ni cambiar opciones para forzarlo sin autorización.
+
+Tras finalizar, revisar estado y avisos, ENUM/default, conteos/etiquetas/IDs, resto de columnas/índices/CHECK y las FK de mantenimiento/viaje. Registrar evidencia privada y solo reabrir escritores con confirmación. El cambio no requiere eliminar tablas o FK ni modificar tipos de servicio/rutas/paradas.
+
+### Recuperación y estado incierto
+
+Ante error/desconexión/timeout, mantener escritores suspendidos y consultar definición/datos antes de decidir. Si sigue el origen, no asumir que se aplicó; si ya está el objetivo, no repetir UP; si existe estado inesperado, detener y revisar con responsable. El fallo de una guarda no convierte filas. El éxito del ALTER debe verificarse por separado, no por mensajes del cliente únicamente.
+
+DOWN necesita autorización y preflight propio, respaldo reciente y revisión de cambios posteriores. Restaura la definición original, no registros borrados ni historial; no autoriza funcionalidades de mantenimiento. Si se necesita recuperación desde respaldo, ensayarla primero y preservar escrituras posteriores antes de una restauración aprobada. No sobreescribir base activa automáticamente ni deshacer migraciones ajenas.
+
+### Fuentes técnicas consultadas y validación realizada
+
+Se contrastó el diseño con documentación primaria de MariaDB: [bloques anónimos](https://mariadb.com/docs/server/reference/sql-statements/programmatic-compound-statements/using-compound-statements-outside-of-stored-programs), [SIGNAL](https://mariadb.com/docs/server/reference/sql-statements/programmatic-compound-statements/signal), [ALTER TABLE](https://mariadb.com/docs/server/reference/sql-statements/data-definition/alter/alter-table) y [ENUM](https://mariadb.com/docs/server/reference/data-types/string-data-types/enum). El ensayo real de los scripts corregidos ya se completó en MariaDB 12.0.2 aislada (evidencia privada EV-08). Se retiró WAIT del ALTER y se verificó lock_wait_timeout de sesión. La aplicación en este sfatza ya fue verificada tras respaldo real restaurado y preflight actualizado; futuras ejecuciones en otros ambientes requieren sus propias verificaciones y autorización.
+
+
+### Intento previo detenido por permisos — 2026-10-27 (histórico, superado)
+
+**Resultado de aquel intento: UP 003 NO EJECUTADO.** El preflight de lectura confirmó sfatza local en MariaDB 12.0.2, ENUM original y cero vehículos/mantenimientos/viajes. Los hashes de scripts coinciden con el ensayo aislado. El procedimiento se detuvo: la cuenta disponible solo tiene SELECT/INSERT/UPDATE/DELETE sobre sfatza, sin ALTER ni permisos administrativos para completar respaldo/verificación de objetos y exclusión de escritores. No se generó un respaldo parcial ni se aplicó DDL; restauración real y ventana quedaron pendientes en aquel momento. Esa limitación se superó mediante la autenticación administrativa interactiva y las verificaciones de la aplicación efectiva descrita a continuación. Los ensayos sintéticos por sí solos no acreditaban un respaldo de los datos reales.
+
+
+### Aplicación efectiva de 003 — 2026-10-27
+
+UP 003 aplicado una sola vez en sfatza de desarrollo, MariaDB 12.0.2 local, usando root con contraseña interactiva. Antes se verificaron privilegios, identidad, SHOW FULL PROCESSLIST/transacciones y ausencia de escritores externos; se protegió el respaldo con read_only temporal y bloqueo global de lectura. No se terminaron sesiones ajenas.
+
+Respaldo completo privado de 20.068 bytes, SHA-256 comprobado y restauración en instancia separada sin TCP. Las 15 tablas, sus definiciones y todas las filas coincidieron con la fuente. El respaldo y su manifiesto permanecen fuera del repositorio, con ACL restringida; la ruta y huellas completas se conservan en la evidencia privada, no se publica contenido.
+
+Un primer auxiliar de respaldo falló por --connect-timeout=10, opción no admitida por mariadb-dump 12.0.2; el archivo vacío no se utilizó. Se corrigió el auxiliar, se repitió preflight y se obtuvo/restauró el respaldo válido antes de ejecutar UP.
+
+Verificación posterior: vehiculo.estado es ENUM('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO', mismo charset/collation. La comparación completa de las 15 definiciones mostró solo ese cambio de ENUM; todas las huellas de filas y conteos permanecieron iguales. mantenimiento, índices UNIQUE, CHECK y FK intactos. read_only volvió a OFF y event_scheduler permaneció OFF. No se ejecutaron DOWN, otras migraciones, inicializador ni DML de negocio. Instancia/base de restauración retiradas tras verificar identidad.
+
+El rechazo anterior de la ventana no permite atribuir una conexión concreta: el registro antiguo no guardaba ID/contexto. En este procedimiento se registraron explícitamente las sesiones propias y no hubo conexiones externas. No se consideran automáticamente peligrosas las conexiones Sleep.
+
+DOWN en sfatza sigue sin autorización. HU-02 aún no implementada. Los permisos de la cuenta de aplicación, root y sus contraseñas no se modificaron. No se reescribieron los scripts ensayados después de su aplicación.
+
+## HU-04: migraciones 004 y 005 (APLICADAS EN DESARROLLO EL 2026-10-27)
+
+La nueva decisión sustituye el catálogo de servicios independiente para la captura: cada alta/actualización de ruta exige un tipo activo existente. No se cambian DIRECTO (ID1/control1) ni PARADAS_CONTINUAS (ID2/control0), ni se propagan cambios a viaje/tarifa.
+
+Inspección real de solo lectura con cuenta habitual: MariaDB12.0.2, sfatza; ruta sin id_tipo_servicio, parada sin índice único de nombre, dos rutas/siete asociaciones y cero viajes/tarifas. La consulta de duplicados normalizados no devolvió grupos en esa inspección; no asumir que esto seguirá siendo cierto. No se modificó ningún dato ni estructura.
+
+### Antes de autorizar aplicación
+1. Detener escrituras de aplicación y herramientas SQL durante respaldo, preflight y DDL; no matar sesiones ajenas automáticamente. Revisar SHOW FULL PROCESSLIST. Usar cuenta administrativa interactiva solo para administración, nunca cambiar la cuenta de aplicación.
+2. Respaldar íntegramente sfatza fuera del repositorio (tablas/datos/FK/triggers/rutinas/eventos), comprobar salida, tamaño/SHA-256 y restauración aislada. Conservar SHOW CREATE TABLE y conteos/huellas por PK. Ninguna contraseña en argumentos, archivos o chat.
+3. Ensayar estos scripts en una copia aislada autorizada antes de aplicar en sfatza; en esta etapa solo se prepararon y no fueron ejecutados ni certificados por ensayo DDL. Cliente MariaDB con DELIMITER, modo estricto y FK/CHECK habilitados; sesión dedicada, destino seleccionado explícitamente y lock_wait_timeout acotado. ALTER implica commit y posibles bloqueos, no es rollback transaccional.
+
+### 004 — Relación de tipo de servicio (versión final aplicada en desarrollo)
+El usuario autorizó retirar exclusivamente las dos rutas de prueba, sus siete asociaciones y cinco paradas identificadas, después de respaldo completo/restaurado, comprobación de ausencia de historia y ventana sin escritores. No se elimina la base ni se restablecen contadores. Usuarios, roles, credenciales, conductores, vehículos, métodos de pago y tipos se conservan. Si los objetivos o dependencias cambian, detenerse.
+La versión final UP 004 exige ruta vacía y añade ruta.id_tipo_servicio TINYINT UNSIGNED NOT NULL más índice/FK RESTRICT. Esta versión sustituye la fase nullable propuesta anteriormente: ya no hace falta asignar tipos a datos antiguos ni ejecutar una fase NOT NULL posterior. No asigna un tipo por defecto, no modifica DIRECTO/PARADAS_CONTINUAS y no altera viajes/tarifas. El mismo SQL exacto debe ensayarse en la restauración aislada antes de aplicarse a sfatza; comparar SHA-256 del script entre ensayo y aplicación.
+La limpieza autorizada elimina por PK exclusivamente asociaciones 1..7, rutas 1/2 con códigos TEST-HU04-001/002 y paradas 1/2/4/5/6 con marca PRUEBA. Revalidar filas completas y referencias bajo transacción, mantener FK habilitadas y borrar en orden hijo/padre. Cualquier viaje, tarifa, boleto, venta, reembolso, mantenimiento o dependencia inesperada detiene el proceso antes de borrar.
+Verificar columna obligatoria/FK, rechazo SQL de NULL u omisión y tipos inexistentes, y conservación completa por huellas de las tablas protegidas. Nuevos datos ficticios se crean mediante servicios y cuenta habitual, nunca root. No habilitar operaciones reales si falla el respaldo, restauración o ensayo.
+DOWN 004 se mantiene conservador: solo permite retirar la columna si no hay asignaciones guardadas; con NOT NULL esto implica tabla vacía. No borrar asignaciones ni ejecutar DOWN en sfatza para forzarlo.
+
+### 005 — Nombre único de parada normalizado
+UP 005 comprueba nombres vacíos y duplicados incluyendo inactivas y referencias distintas. Canonicaliza solo para comparar/indexar: UPPER(TRIM(REGEXP_REPLACE(nombre,'[[:space:]]+',' '))) con utf8mb4_uca1400_ai_ci. Esta collation también considera equivalentes ciertos acentos, por coherencia con el esquema existente. El nombre descriptivo conserva escritura; la aplicación recorta y reduce espacios Unicode al guardar nuevas capturas.
+Si aparecen grupos duplicados, detenerse, informar sus IDs y pedir resolución explícita al usuario. No eliminar/fusionar/renombrar ni remapear asociaciones automáticamente. La migración se niega a instalar el índice hasta resolverlos; no usar IGNORE. Nuevas altas/ediciones se protegen en aplicación, serializadas por el bloqueo administrativo existente. La garantía para escritores SQL externos requiere aplicar 005.
+005 añade únicamente columna generada PERSISTENT nombre_normalizado e índice UNIQUE nombre; no reescribe nombres/referencias/IDs ni modifica ruta_parada. Longitud360 evita truncar expansiones de mayúsculas; índice utf8mb4 dentro del límite de InnoDB. Verificar sintaxis/expresión/indexación en ensayo autorizado MariaDB antes de producción local.
+Verificar generado/índice únicos, ausencia de grupos equivalentes y comparación por PK de todos los datos originales. DOWN005 retira solo índice/columna derivada, sin cambiar filas originales; suspende protección SQL y exige ventana controlada/autorización.
+
+### Actualización de recorridos
+La aplicación comprueba ausencia de viajes al abrir y, de nuevo, bajo bloqueo/transacción al guardar. No cambia el estado al editar. Si el recorrido no cambia, conserva todos los IDs de ruta_parada y distancias. Si cambia, solo se reemplazan sus asociaciones cuando no hay tarifas y las dependencias se verifican; se revierten todos los cambios ante fallo. Con tarifas, bloquea reemplazo para conservar historia y permite únicamente datos con recorrido intacto. No modifica el flujo existente de eliminación. El máximo de cinco puntos se aplica a nuevas capturas/actualizaciones, no mediante recorte o migración de rutas antiguas.
+
+### Ejecución verificada — 2026-10-27
+Aplicadas UP004 y UP005 en sfatza/MariaDB12.0.2 tras autorización explícita, respaldo completo privado de 21.651 bytes con SHA-256 bf23f681ba6f4fbad6b1abca4c558f21161a8aca642b1759eab12c109568c919, restauración idéntica de las 15 tablas/objetos y ensayo aislado satisfactorio. La evidencia y SQL de respaldo permanecen fuera del repositorio, con ACL restringida; no se publica su contenido.
+Se ejecutaron exactamente los SQL ensayados: UP004 SHA-256 5c1862bffe68def647ed5f8c666530ac6bc23cede3543c886bf878fb2dea1726; UP005 SHA-256 6e1cb394c3c9de09da6c5e9ef7a3bd3f7024d609d3c45c137cbf84043a74bfd4. No se modificaron después; sus comentarios PREPARADA/NO EJECUTADA reflejan la etapa de preparación, y este registro es el estado vigente para desarrollo. No reejecutarlos sobre esta base ni aplicar DOWN sin autorización específica.
+Limpieza transaccional por PK y comprobación de filas exactas: ruta_parada IDs1..7, rutas1/2 (TEST-HU04-001/002), paradas1/2/4/5/6 con marca PRUEBA. Sin FK desactivadas, TRUNCATE, reseteo de contadores, borrado de base o cambios en cuentas. Antes de limpiar se verificaron cero viajes/tarifas/ventas/boletos/reembolsos/mantenimientos y las dependencias esperadas.
+Verificado: ruta.id_tipo_servicio TINYINT UNSIGNED NOT NULL con FK RESTRICT; parada.nombre_normalizado generada persistente e índice UNIQUE nombre. Ensayo:29 comprobaciones reales; principal:29 comprobaciones reales de servicios/repositorios MVC con cuenta habitual (root solo administración). Incluyeron alta/consulta/actualización de ruta y parada, tipo/recorrido, rechazo de datos inválidos/duplicados, SQL UNIQUE/FK/obligatoriedad, versión obsoleta, estados y eliminación física de temporales. No se probó login o navegación en navegador ni se crearon viajes/boletos.
+Datos demostrativos conservados: ruta4 HU04-0F1E0C9F-RUTA, DIRECTO ID1, activa; recorrido paradas8→9→10 (ORIGEN/INTERMEDIA/DESTINO). Ruta temporal5 y parada temporal12 borradas por los servicios existentes; cero temporales residuales distintos del conjunto demostrativo. Los saltos de ID provienen de pruebas/rollback/borrado y no se restablecieron.
+Estado final:15 tablas; ruta1, parada3 y ruta_parada3; todos los datos/esquemas de tablas protegidas coinciden por huellas con el respaldo (usuarios/roles/credenciales/conductores/vehículos/tipos/métodos de pago e historia). DIRECTO ID1/control1 y PARADAS_CONTINUAS ID2/control0 intactos. read_only volvió a OFF, FK/CHECK en1. Instancia aislada propia apagada y directorio retirado; no se registró un servicio de Windows ni se utilizó TCP en el ensayo.
+Incidencias controladas previas a cualquier borrado: conexiones DBeaver ajenas detenían el preflight; lectura incorrecta de read_only como entero corregida en auxiliar privado al comprobar que MariaDB12 lo devuelve como ENUM ON/OFF. El respaldo restaurado se reutilizó solo tras revalidar su SHA, los SQL y las huellas completas de sfatza sin cambios. No se almacenaron contraseñas en archivos, comandos visibles ni evidencia; autenticación interactiva y credenciales transitorias únicamente en memoria. Word y planes privados conservados, sin commit/push.

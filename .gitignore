@@ -71,4 +71,7 @@ Desktop.ini
 /AGENTS.md
 /MEMORY.md
 /.agents/
+# Documentacion privada de agentes por sprint; no distribuir en el repositorio.
+/.agents/private/sprint-01/
+/.agents/private/sprint-02/
 /docs/constitution.md

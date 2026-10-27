@@ -75,7 +75,7 @@ CREATE TABLE `vehiculo` (
   `placa` varchar(20) NOT NULL,
   `descripcion` varchar(100) DEFAULT NULL,
   `capacidad` smallint(5) unsigned NOT NULL,
-  `estado` enum('ACTIVO','MANTENIMIENTO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',
+  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',
   PRIMARY KEY (`id_vehiculo`),
   UNIQUE KEY `numero_economico` (`numero_economico`),
   UNIQUE KEY `placa` (`placa`),

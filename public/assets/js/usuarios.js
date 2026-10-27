@@ -1,5 +1,33 @@
 'use strict';
 
+document.querySelectorAll('[data-capacidad-vehiculo]').forEach((input) => {
+    const comprobar = () => {
+        const valor = input.value;
+        input.setCustomValidity(/^[0-9]+$/.test(valor) && Number(valor) >= 1 && Number(valor) <= 30
+            ? '' : 'La capacidad debe estar entre 1 y 30 pasajeros');
+    };
+    input.addEventListener('input', comprobar);
+    input.addEventListener('change', comprobar);
+    comprobar();
+});
+
+document.querySelectorAll('[data-telefono]').forEach((input) => {
+    const comprobar = () => input.setCustomValidity((input.value === '' && !input.required) || /^[0-9]{10}$/.test(input.value)
+        ? '' : 'El teléfono debe contener exactamente 10 dígitos');
+    input.addEventListener('beforeinput', (evento) => {
+        // Rechazar prefijos/formato pegado en lugar de transformarlos en otro teléfono.
+        const texto = evento.dataTransfer?.getData('text/plain') ?? evento.data;
+        if (typeof texto === 'string' && /[^0-9]/.test(texto)) evento.preventDefault();
+    });
+    input.addEventListener('input', () => {
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 10);
+        comprobar();
+    });
+    input.addEventListener('change', comprobar);
+    // No normalizar ni recortar datos antiguos al abrir el formulario.
+    comprobar();
+});
+
 // Las longitudes HTML se cuentan en UTF-16; validar caracteres Unicode como el servidor.
 document.querySelectorAll('[data-max-caracteres]').forEach((input) => {
     const comprobar = () => {

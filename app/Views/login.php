@@ -9,13 +9,14 @@ require __DIR__ . '/partials/cabecera.php';
         <div class="login-aside__copy">
             <span class="eyebrow eyebrow--light">SISTEMA DE ADMINISTRACIÓN</span>
             <h1>Control claro.<br> Gestión confiable.</h1>
-            <p>Acceso institucional para la administración de usuarios y conductores.</p>
+            <p>Administre su operación de transporte desde un solo lugar.</p>
         </div>
         <span class="login-aside__footer">SFATSA · Acceso institucional</span>
     </aside>
     <main class="login-main">
         <section class="login-card" aria-labelledby="login-title">
-            <span class="login-card__index">01 / LOGIN</span>
+            <span class="module-icon module-icon--mint"><?= $icono('shield-check') ?></span>
+            <span class="login-card__index">ACCESO SEGURO</span>
             <h2 id="login-title">Bienvenido</h2>
             <p class="login-card__intro">Ingrese sus credenciales para acceder a SFATSA.</p>
             <?php if ($error !== ''): ?>
@@ -41,7 +42,7 @@ require __DIR__ . '/partials/cabecera.php';
                 </div>
                 <button class="btn button button--primary w-100" type="submit" data-submit>
                     <span class="loading-indicator" aria-hidden="true" hidden></span>
-                    <span data-button-label>Iniciar sesión</span>
+                    <span data-button-label>Iniciar sesión</span><?= $icono('arrow-right') ?>
                 </button>
                 <span class="visually-hidden" role="status" aria-live="polite" data-submit-status></span>
             </form>

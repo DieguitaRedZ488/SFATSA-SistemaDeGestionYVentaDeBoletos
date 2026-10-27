@@ -75,11 +75,21 @@ final class ConductorService
         return $valor;
     }
 
+    private function telefono(mixed $valor): ?string
+    {
+        // Opcional; conservar como texto, incluidos los ceros iniciales. No reparar formatos.
+        if ($valor === null || $valor === '') { return null; }
+        if (!is_string($valor) || preg_match('/\A[0-9]{10}\z/', $valor) !== 1) {
+            throw new ErrorGestionConductores(['telefono' => 'El teléfono debe contener exactamente 10 dígitos']);
+        }
+        return $valor;
+    }
+
     private function validar(array $entrada): array
     {
         $datos = [];
         $errores = [];
-        foreach (['nombres' => 120, 'apellidos' => 120, 'numero_licencia' => 40, 'telefono' => 25] as $campo => $limite) {
+        foreach (['nombres' => 120, 'apellidos' => 120, 'numero_licencia' => 40, 'telefono' => 10] as $campo => $limite) {
             if ($campo === 'numero_licencia') {
                 try {
                     $datos[$campo] = $this->licencia($entrada[$campo] ?? null);
@@ -89,6 +99,10 @@ final class ConductorService
                 continue;
             }
             try {
+                if ($campo === 'telefono') {
+                    $datos[$campo] = $this->telefono($entrada[$campo] ?? null);
+                    continue;
+                }
                 $datos[$campo] = $this->texto(
                     $entrada[$campo] ?? null,
                     $limite,
