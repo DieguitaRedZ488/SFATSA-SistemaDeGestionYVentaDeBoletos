@@ -50,9 +50,9 @@ Los datos anteriores describen el equipo de referencia y no establecen versiones
 
 ## Configuración básica
 
-- `.gitignore` excluye entornos con secretos, respaldos, dependencias, temporales, logs, cachés, llaves privadas y archivos locales del sistema/editor, y conserva `.env.example` y los SQL fuente versionables.
+- `.gitignore` excluye entornos con secretos, respaldos, dependencias, temporales, logs, cachés, llaves privadas y archivos locales del sistema/editor, incluidos `.env` y `.env.example`, y conserva los SQL fuente versionables.
 - `.editorconfig` declara UTF-8, LF, salto de línea final, eliminación de espacios al final y sangría de 4 espacios para PHP y 2 para HTML, CSS, JavaScript, JSON, YAML y Markdown. Sus reglas dependen del soporte del editor y no se han aplicado automáticamente a archivos existentes.
-- `.env.example` contiene la URL local y la base `sfatza`; usuario y contraseña permanecen vacíos. El lector estricto está en `config/Environment.php`. No se crea `.env` automáticamente, ni una base de datos. Ejecutar `tests/pdo-infrastructure.php` para validar con datos ficticios; reservar `database/check-connection.php` para una prueba autorizada después de configurar las credenciales localmente.
+- Crear manualmente el `.env` privado siguiendo la [guía de instalación](docs/05-documentacion-tecnica/general/instalacion-windows-xampp.md#3-configurar-las-variables-privadas), sin sobrescribir uno existente. Los archivos de entorno y sus plantillas no se publican en GitHub. El lector estricto está en `config/Environment.php`. No se crea `.env` automáticamente, ni una base de datos. Ejecutar `tests/pdo-infrastructure.php` para validar con datos ficticios; reservar `database/check-connection.php` para una prueba autorizada después de configurar las credenciales localmente.
 
 ## Colaboración con Git y ramas
 

@@ -1,7 +1,7 @@
-# Entornos locales y secretos; conservar la plantilla versionable.
+# Entornos locales y secretos; no versionar archivos de entorno ni plantillas.
 .env
 .env.*
-!.env.example
+
 
 # Dependencias instaladas.
 vendor/

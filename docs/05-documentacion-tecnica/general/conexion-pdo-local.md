@@ -16,9 +16,9 @@ El usuario configuró manualmente `.env` privado. Se comprobó que está ignorad
 
 ## Configuración privada
 
-Crear manualmente `.env` en la raíz a partir de `.env.example`, solo cuando se disponga de las credenciales locales. No compartirlas por chat ni introducirlas como argumentos de consola. Completar `DB_USERNAME` con la cuenta de aplicación y `DB_PASSWORD` localmente. No utilizar root. El archivo está ignorado por Git y debe tener permisos de lectura restringidos; mantenerlo fuera de `public/` y no copiarlo a documentación, logs o respaldos versionados.
+Crear manualmente `.env` privado en la raíz, sin sobrescribir uno existente, solo cuando se disponga de las credenciales locales. No se distribuye una plantilla. Seguir la [guía de instalación](instalacion-windows-xampp.md#3-configurar-las-variables-privadas) y el formato indicado abajo. No compartirlas por chat ni introducirlas como argumentos de consola. Completar `DB_USERNAME` con la cuenta de aplicación y `DB_PASSWORD` localmente. No utilizar root. El archivo está ignorado por Git y debe tener permisos de lectura restringidos; mantenerlo fuera de `public/` y no copiarlo a documentación, logs o respaldos versionados.
 
-Valores no secretos acordados: `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=sfatza`, `DB_CHARSET=utf8mb4`. La plantilla deja usuario y contraseña vacíos: no permite conectar hasta completarlos. La cuenta SQL se identifica por usuario y host; `DB_USERNAME` contiene únicamente el nombre de usuario, sin `@127.0.0.1`.
+Valores no secretos acordados: `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE=sfatza`, `DB_CHARSET=utf8mb4`. Incluir también `DB_USERNAME` y `DB_PASSWORD`: ambos son obligatorios y deben completarse únicamente en el archivo privado local. La cuenta SQL se identifica por usuario y host; `DB_USERNAME` contiene únicamente el nombre de usuario, sin `@127.0.0.1`.
 
 ## Formato del lector
 
