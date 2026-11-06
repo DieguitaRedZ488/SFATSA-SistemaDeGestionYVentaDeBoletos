@@ -12,16 +12,15 @@ require __DIR__ . '/partials/gestion-inicio.php';
             <div><dt>Perfil de acceso</dt><dd><span class="role-badge"><?= $escapar($usuario->rol) ?></span></dd></div>
         </dl>
     </section>
+    <?php if ($puedeGestionar): ?>
     <section class="card desarrollo-card" aria-labelledby="desarrollo-title">
         <span class="module-icon"><?= $icono('users') ?></span>
         <h2 id="desarrollo-title">Gestión de usuarios</h2>
-        <?php if ($puedeGestionar): ?>
             <p>Consulte las cuentas, registre usuarios y administre sus datos, roles y acceso.</p>
             <a class="btn button button--primary" href="/?ruta=usuarios">Gestionar usuarios <?= $icono('arrow-right') ?></a>
-        <?php else: ?>
-            <p>La gestión de usuarios y conductores está reservada al rol ADMINISTRADOR.</p>
-        <?php endif; ?>
+
     </section>
+    <?php endif; ?>
     <?php if ($puedeGestionar): ?>
     <section class="card desarrollo-card" aria-labelledby="conductores-title">
         <span class="module-icon"><?= $icono('contact-round') ?></span>
@@ -46,5 +45,6 @@ require __DIR__ . '/partials/gestion-inicio.php';
     </section>
     <?php endforeach; ?>
     <?php endif; ?>
+    <?php if (!$puedeGestionar): ?><section class="card bienvenida-card dashboard-empty"><h2>Su sesión está lista</h2><p>Los módulos disponibles dependen de su perfil de acceso. No hay herramientas administrativas habilitadas para este perfil.</p></section><?php endif; ?>
 </div>
 <?php require __DIR__ . '/partials/gestion-fin.php'; ?>

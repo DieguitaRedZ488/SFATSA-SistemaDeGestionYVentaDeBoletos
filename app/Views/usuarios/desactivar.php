@@ -9,7 +9,7 @@ require __DIR__ . '/layout-inicio.php';
     <h2 id="cuenta-title"><?= $escapar($cuenta['nombres'] . ' ' . $cuenta['apellidos']) ?></h2>
     <dl><div><dt>Usuario</dt><dd><?= $escapar($cuenta['usuario']) ?></dd></div><div><dt>Rol</dt><dd><?= $escapar($cuenta['rol']) ?></dd></div><div><dt>Estado</dt><dd><span class="status <?= (int) $cuenta['activo'] === 1 ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono((int) $cuenta['activo'] === 1 ? 'check-circle' : 'x-circle') ?></span><?= (int) $cuenta['activo'] === 1 ? 'Habilitado' : 'Deshabilitado' ?></span></dd></div></dl>
 </section>
-<section class="confirm-card" aria-labelledby="confirm-title">
+<section data-simple-confirm class="confirm-card" aria-labelledby="confirm-title">
     <span class="confirm-icon" aria-hidden="true"><?= $icono('shield-check') ?></span>
     <span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
     <h2 id="confirm-title">¿Desea deshabilitar este usuario?</h2>

@@ -12,7 +12,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
     <h2 id="vehiculo-title"><?= $escapar($vehiculo['numero_economico']) ?></h2>
     <dl><div><dt>Placa</dt><dd><?= $escapar($vehiculo['placa']) ?></dd></div><div><dt>Descripción</dt><dd><?= $escapar($vehiculo['descripcion'] ?? 'Sin descripción registrada') ?></dd></div><div><dt>Estado actual</dt><dd><span class="status <?= $vehiculo['estado'] === 'ACTIVO' ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono($vehiculo['estado'] === 'ACTIVO' ? 'check-circle' : 'x-circle') ?></span><?= $vehiculo['estado'] === 'ACTIVO' ? 'Habilitado' : 'Deshabilitado' ?></span></dd></div></dl>
 </section>
-<section class="confirm-card" aria-labelledby="confirm-title">
+<section data-simple-confirm class="confirm-card" aria-labelledby="confirm-title">
     <span class="confirm-icon" aria-hidden="true"><?= $icono('shield-check') ?></span><span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
     <h2 id="confirm-title">¿Desea <?= $activar ? 'habilitar' : 'deshabilitar' ?> este vehículo?</h2>
     <p>El vehículo <strong><?= $escapar($vehiculo['numero_economico']) ?></strong>, con placa <strong><?= $escapar($vehiculo['placa']) ?></strong>, cambiará a estado <strong><?= $activar ? 'Habilitado' : 'Deshabilitado' ?></strong>. Sus datos se conservarán.</p>

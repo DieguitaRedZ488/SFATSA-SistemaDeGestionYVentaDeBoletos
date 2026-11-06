@@ -15,9 +15,9 @@ require __DIR__ . '/gestion-inicio.php';
         <?php $campos = ['nombre' => ['Nombre', $moduloGestion === 'paradas' ? 120 : 40]]; if ($moduloGestion === 'paradas') { $campos['referencia'] = ['Referencia (opcional)', 255]; } ?>
         <?php foreach ($campos as $campo => [$etiqueta, $limite]): ?>
         <div class="field"><label for="<?= $escapar($campo) ?>"><?= $escapar($etiqueta) ?><?= $campo === 'nombre' ? ' *' : '' ?></label>
-            <input class="form-control field__control" id="<?= $escapar($campo) ?>" name="<?= $escapar($campo) ?>" value="<?= $escapar($valores[$campo] ?? '') ?>" maxlength="<?= $limite ?>"<?= $campo === 'nombre' ? ' required' : '' ?> aria-describedby="<?= $escapar($campo) ?>-ayuda"<?= isset($errores[$campo]) ? ' aria-invalid="true"' : '' ?>>
+            <input class="form-control field__control" id="<?= $escapar($campo) ?>" name="<?= $escapar($campo) ?>" value="<?= $escapar($valores[$campo] ?? '') ?>" maxlength="<?= $limite ?>"<?= $campo === 'nombre' ? ' required' : '' ?> aria-describedby="<?= $escapar($campo) ?>-ayuda<?= isset($errores[$campo]) ? ' ' . $escapar($campo) . '-error' : '' ?>"<?= isset($errores[$campo]) ? ' aria-invalid="true"' : '' ?>>
             <p class="field-help" id="<?= $escapar($campo) ?>-ayuda">Máximo <?= $limite ?> caracteres.</p>
-            <?php if (isset($errores[$campo])): ?><p class="field-error" role="alert"><?= $escapar($errores[$campo]) ?></p><?php endif; ?>
+            <?php if (isset($errores[$campo])): ?><p class="field-error" id="<?= $escapar($campo) ?>-error" role="alert"><?= $escapar($errores[$campo]) ?></p><?php endif; ?>
         </div><?php endforeach; ?>
     </div><p class="form-note"><?= $moduloGestion === 'paradas' ? 'El nombre debe ser único, también entre paradas deshabilitadas. Sus asociaciones se conservarán.' : 'El nombre identifica el servicio en los formularios de rutas.' ?></p></div>
     <div class="form-card__footer"><a class="btn button button--secondary" href="/?ruta=<?= $escapar($moduloGestion) ?>">Cancelar</a><button class="btn button button--primary" type="submit"><?= $edicion ? 'Guardar cambios' : 'Registrar' ?></button></div>

@@ -15,7 +15,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
         <div><dt>Estado</dt><dd><span class="status <?= $vehiculo['estado'] === 'ACTIVO' ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono($vehiculo['estado'] === 'ACTIVO' ? 'check-circle' : 'x-circle') ?></span><?= $vehiculo['estado'] === 'ACTIVO' ? 'Habilitado' : 'Deshabilitado' ?></span></dd></div>
     </dl>
 </section>
-<section class="confirm-card confirm-card--danger" aria-labelledby="confirm-title">
+<section data-simple-confirm class="confirm-card confirm-card--danger" aria-labelledby="confirm-title">
     <span class="confirm-icon confirm-icon--danger" aria-hidden="true"><?= $icono('alert-triangle') ?></span>
     <span class="eyebrow">ELIMINACIÓN FÍSICA</span>
     <h2 id="confirm-title">¿Eliminar este vehículo?</h2>

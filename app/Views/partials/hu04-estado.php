@@ -13,7 +13,7 @@ require __DIR__ . '/gestion-inicio.php';
     <?php if (isset($registro['codigo'])): ?><p>Código: <?= $escapar($registro['codigo']) ?></p><?php endif; ?>
     <p>Estado actual: <span class="status <?= (int) $registro[$campoEstado] === 1 ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono((int) $registro[$campoEstado] === 1 ? 'check-circle' : 'x-circle') ?></span><?= $escapar((int) $registro[$campoEstado] === 1 ? $estadoHabilitado : $estadoDeshabilitado) ?></span></p>
 </section>
-<section class="confirm-card" aria-labelledby="confirmar-title"><span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
+<section data-simple-confirm class="confirm-card" aria-labelledby="confirmar-title"><span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
     <h2 id="confirmar-title">¿Desea <?= $escapar(strtolower($accion)) ?> <?= $moduloGestion === 'rutas' ? 'esta ruta' : ($moduloGestion === 'paradas' ? 'esta parada' : 'este tipo de servicio') ?>?</h2><p><?= $escapar($notaEstado) ?></p>
     <?php if ($redundante): ?><p role="status">El registro ya tiene el estado solicitado.</p><a class="btn button button--secondary" href="/?ruta=<?= $escapar($moduloGestion) ?>">Volver al listado</a>
     <?php else: ?>

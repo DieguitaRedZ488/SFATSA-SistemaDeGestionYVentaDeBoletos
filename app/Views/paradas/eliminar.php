@@ -13,7 +13,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
         <div><dt>Estado</dt><dd><span class="status <?= (int) $registro['activo'] === 1 ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono((int) $registro['activo'] === 1 ? 'check-circle' : 'x-circle') ?></span><?= (int) $registro['activo'] === 1 ? 'Habilitada' : 'Deshabilitada' ?></span></dd></div>
     </dl>
 </section>
-<section class="confirm-card confirm-card--danger" aria-labelledby="confirm-title">
+<section data-simple-confirm class="confirm-card confirm-card--danger" aria-labelledby="confirm-title">
     <span class="confirm-icon confirm-icon--danger" aria-hidden="true"><?= $icono('alert-triangle') ?></span>
     <span class="eyebrow">ELIMINACIÓN FÍSICA</span>
     <h2 id="confirm-title">¿Eliminar esta parada?</h2>

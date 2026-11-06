@@ -29,24 +29,25 @@ $opciones = static function (string $seleccionado) use ($paradas, $catalogoIds, 
     <div class="form-card__header"><h2>Datos de la ruta</h2><p>Los campos con * son obligatorios.</p></div>
     <div class="form-card__body"><div class="form-grid">
         <?php foreach (['codigo' => ['Código', 30], 'nombre' => ['Nombre', 120]] as $campo => [$etiqueta, $limite]): ?>
-        <div class="field"><label for="<?= $escapar($campo) ?>"><?= $escapar($etiqueta) ?> *</label><input class="form-control field__control" id="<?= $escapar($campo) ?>" name="<?= $escapar($campo) ?>" maxlength="<?= $limite ?>" required value="<?= $escapar($valores[$campo] ?? '') ?>"<?= isset($errores[$campo]) ? ' aria-invalid="true"' : '' ?>>
-            <?php if (isset($errores[$campo])): ?><p class="field-error" role="alert"><?= $escapar($errores[$campo]) ?></p><?php endif; ?>
+        <div class="field"><label for="<?= $escapar($campo) ?>"><?= $escapar($etiqueta) ?> *</label><input class="form-control field__control" id="<?= $escapar($campo) ?>" name="<?= $escapar($campo) ?>" maxlength="<?= $limite ?>" required value="<?= $escapar($valores[$campo] ?? '') ?>"<?= isset($errores[$campo]) ? ' aria-invalid="true" aria-describedby="' . $escapar($campo) . '-error"' : '' ?>>
+            <?php if (isset($errores[$campo])): ?><p class="field-error" id="<?= $escapar($campo) ?>-error" role="alert"><?= $escapar($errores[$campo]) ?></p><?php endif; ?>
         </div><?php endforeach; ?>
         <div class="field"><label for="id_tipo_servicio">Tipo de servicio *</label>
-            <select class="form-select field__control" id="id_tipo_servicio" name="id_tipo_servicio" required<?= isset($errores['id_tipo_servicio']) ? ' aria-invalid="true"' : '' ?>>
+            <select class="form-select field__control" id="id_tipo_servicio" name="id_tipo_servicio" required<?= isset($errores['id_tipo_servicio']) ? ' aria-invalid="true" aria-describedby="id_tipo_servicio-error"' : '' ?>>
                 <option value="">Seleccione un tipo de servicio</option>
                 <?php $tipoElegido = (string) ($valores['id_tipo_servicio'] ?? ''); $tiposIds = array_map('strval', array_column($tipos, 'id_tipo_servicio')); ?>
                 <?php if ($tipoElegido !== '' && !in_array($tipoElegido, $tiposIds, true)): ?><option selected disabled value="<?= $escapar($tipoElegido) ?>">Tipo no disponible; seleccione otro</option><?php endif; ?>
                 <?php foreach ($tipos as $tipo): ?><option value="<?= (int) $tipo['id_tipo_servicio'] ?>" data-servicio-directo="<?= strtoupper(trim((string) $tipo['nombre'])) === 'DIRECTO' ? '1' : '0' ?>"<?= $tipoElegido === (string) $tipo['id_tipo_servicio'] ? ' selected' : '' ?>><?= $escapar($tipo['nombre']) ?></option><?php endforeach; ?>
             </select>
-            <?php if (isset($errores['id_tipo_servicio'])): ?><p class="field-error" role="alert"><?= $escapar($errores['id_tipo_servicio']) ?></p><?php endif; ?>
+            <?php if (isset($errores['id_tipo_servicio'])): ?><p class="field-error" id="id_tipo_servicio-error" role="alert"><?= $escapar($errores['id_tipo_servicio']) ?></p><?php endif; ?>
         </div>
         <?php foreach (['origen' => 'Origen', 'destino' => 'Destino'] as $campo => $etiqueta): ?>
-        <div class="field"><label for="<?= $escapar($campo) ?>"><?= $escapar($etiqueta) ?> *</label><select class="form-select field__control" id="<?= $escapar($campo) ?>" name="<?= $escapar($campo) ?>" required aria-describedby="recorrido-ayuda" data-recorrido-control><?php $opciones((string) ($valores[$campo] ?? '')); ?></select></div>
+        <div class="field"><label for="<?= $escapar($campo) ?>"><?= $escapar($etiqueta) ?> *</label><select class="form-select field__control" id="<?= $escapar($campo) ?>" name="<?= $escapar($campo) ?>" required aria-describedby="recorrido-ayuda recorrido-intermedias-error<?= isset($errores['recorrido']) ? ' recorrido-error' : '' ?><?= isset($errores[$campo]) ? ' ' . $escapar($campo) . '-error' : '' ?>"<?= isset($errores['recorrido']) || isset($errores[$campo]) ? ' aria-invalid="true"' : '' ?> data-recorrido-control><?php $opciones((string) ($valores[$campo] ?? '')); ?></select>
+            <?php if (isset($errores[$campo])): ?><p class="field-error" id="<?= $escapar($campo) ?>-error" role="alert"><?= $escapar($errores[$campo]) ?></p><?php endif; ?></div>
         <?php endforeach; ?>
     </div>
     <p class="field-help" id="recorrido-ayuda">Origen y destino deben ser distintos. Seleccione únicamente paradas habilitadas, sin repetirlas. Las rutas nuevas se crean habilitadas. Las rutas con viajes asociados no pueden actualizarse.</p>
-    <?php if (isset($errores['recorrido'])): ?><p class="field-error" role="alert"><?= $escapar($errores['recorrido']) ?></p><?php endif; ?>
+    <?php if (isset($errores['recorrido'])): ?><p class="field-error" id="recorrido-error" role="alert"><?= $escapar($errores['recorrido']) ?></p><?php endif; ?>
     <p class="service-hint" data-directo-ayuda role="status" hidden>El servicio directo únicamente permite origen y destino.</p>
     <section class="intermedias" aria-labelledby="intermedias-titulo" data-intermedias data-max-intermedias="3">
         <div class="intermedias__header"><div><h3 id="intermedias-titulo">Paradas intermedias <span>(opcional)</span></h3>
@@ -57,7 +58,7 @@ $opciones = static function (string $seleccionado) use ($paradas, $catalogoIds, 
             <?php foreach ($intermedias as $i => $seleccionado): ?>
             <div class="intermedia" data-fila-intermedia>
                 <div class="field"><label for="intermedia-<?= $i ?>">Parada intermedia <?= $i + 1 ?></label>
-                    <select class="form-select field__control" id="intermedia-<?= $i ?>" name="intermedias[]" data-intermedia-select><?php $opciones(is_string($seleccionado) || is_int($seleccionado) ? (string) $seleccionado : ''); ?></select></div>
+                    <select class="form-select field__control" id="intermedia-<?= $i ?>" name="intermedias[]" aria-describedby="recorrido-ayuda recorrido-intermedias-error<?= isset($errores['recorrido']) ? ' recorrido-error' : '' ?>"<?= isset($errores['recorrido']) ? ' aria-invalid="true"' : '' ?> data-intermedia-select><?php $opciones(is_string($seleccionado) || is_int($seleccionado) ? (string) $seleccionado : ''); ?></select></div>
                 <div class="intermedia__acciones" aria-label="Orden y acciones de la parada intermedia">
                     <button class="btn button button--secondary" type="button" data-subir-intermedia aria-label="Subir parada intermedia <?= $i + 1 ?>">Subir</button>
                     <button class="btn button button--secondary" type="button" data-bajar-intermedia aria-label="Bajar parada intermedia <?= $i + 1 ?>">Bajar</button>
@@ -67,10 +68,10 @@ $opciones = static function (string $seleccionado) use ($paradas, $catalogoIds, 
             <?php endforeach; ?>
         </div>
         <p class="field-help" data-conteo-intermedias aria-live="polite"><?= count($intermedias) ?> de 3 paradas intermedias.</p>
-        <p class="field-error" data-error-intermedias role="alert" hidden></p>
+        <p class="field-error" id="recorrido-intermedias-error" data-error-intermedias role="alert" hidden></p>
         <template data-plantilla-intermedia><div class="intermedia" data-fila-intermedia>
             <div class="field"><label for="intermedia-__INDEX__">Parada intermedia</label>
-                <select class="form-select field__control" id="intermedia-__INDEX__" name="intermedias[]" data-intermedia-select><?php $opciones(''); ?></select></div>
+                <select class="form-select field__control" id="intermedia-__INDEX__" name="intermedias[]" aria-describedby="recorrido-ayuda recorrido-intermedias-error<?= isset($errores['recorrido']) ? ' recorrido-error' : '' ?>" data-intermedia-select><?php $opciones(''); ?></select></div>
             <div class="intermedia__acciones" aria-label="Orden y acciones de la parada intermedia">
                 <button class="btn button button--secondary" type="button" data-subir-intermedia>Subir</button>
                 <button class="btn button button--secondary" type="button" data-bajar-intermedia>Bajar</button>

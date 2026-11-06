@@ -14,7 +14,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
         <?php foreach ($ruta['paradas'] as $parada): ?><li><?= $escapar($parada['nombre']) ?><?= (int) $parada['activo'] === 1 ? '' : ' (Deshabilitada)' ?></li><?php endforeach; ?>
     </ol>
 </section>
-<section class="confirm-card confirm-card--danger" aria-labelledby="confirm-title">
+<section data-simple-confirm class="confirm-card confirm-card--danger" aria-labelledby="confirm-title">
     <span class="confirm-icon confirm-icon--danger" aria-hidden="true"><?= $icono('alert-triangle') ?></span>
     <span class="eyebrow">ELIMINACIÓN FÍSICA</span>
     <h2 id="confirm-title">¿Eliminar esta ruta?</h2>

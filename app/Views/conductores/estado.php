@@ -12,7 +12,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
     <h2 id="conductor-title"><?= $escapar($conductor['nombres'] . ' ' . $conductor['apellidos']) ?></h2>
     <dl><div><dt>Licencia</dt><dd><?= $escapar($conductor['numero_licencia'] ?? 'Sin registrar') ?></dd></div><div><dt>Teléfono</dt><dd><?= $escapar($conductor['telefono'] ?? 'Sin registrar') ?></dd></div><div><dt>Estado actual</dt><dd><span class="status <?= (int) $conductor['activo'] === 1 ? 'status--activo' : 'status--inactivo' ?>"><span class="status__icon" aria-hidden="true"><?= $icono((int) $conductor['activo'] === 1 ? 'check-circle' : 'x-circle') ?></span><?= (int) $conductor['activo'] === 1 ? 'Habilitado' : 'Deshabilitado' ?></span></dd></div></dl>
 </section>
-<section class="confirm-card" aria-labelledby="confirm-title">
+<section data-simple-confirm class="confirm-card" aria-labelledby="confirm-title">
     <span class="confirm-icon" aria-hidden="true"><?= $icono('shield-check') ?></span><span class="eyebrow">CONFIRMACIÓN REQUERIDA</span>
     <h2 id="confirm-title">¿Desea <?= $activar ? 'habilitar' : 'deshabilitar' ?> este conductor?</h2>
     <p>El conductor <strong><?= $escapar($conductor['nombres'] . ' ' . $conductor['apellidos']) ?></strong> cambiará a estado <strong><?= $activar ? 'Habilitado' : 'Deshabilitado' ?></strong>. Su información e historial se conservarán.</p>

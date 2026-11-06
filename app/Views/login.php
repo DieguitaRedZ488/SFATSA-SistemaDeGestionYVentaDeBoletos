@@ -1,11 +1,17 @@
 <?php
 $titulo = 'Iniciar sesión';
 $claseBody = 'pagina-login';
+// Recurso pendiente: añadir únicamente la fotografía aprobada con licencia comprobada.
+$fotoLoginDisponible = is_file(dirname(__DIR__, 2) . '/public/assets/images/login-combi-roja-blanca.webp');
 require __DIR__ . '/partials/cabecera.php';
 ?>
 <div class="login-screen">
     <aside class="login-aside" aria-label="SFATSA">
-        <div class="login-aside__brand">SFATSA</div>
+        <div class="login-photo<?= $fotoLoginDisponible ? ' login-photo--ready' : '' ?>" data-login-photo data-photo-state="<?= $fotoLoginDisponible ? 'ready' : 'pending' ?>" aria-hidden="true">
+            <?php if ($fotoLoginDisponible): ?><img src="/assets/images/login-combi-roja-blanca.webp" alt="" decoding="async"><?php endif; ?>
+        </div>
+        <div class="login-aside__brand"><?= $icono('bus-front') ?> SFATSA</div>
+        <?php if (!$fotoLoginDisponible): ?><div class="login-aside__art" aria-hidden="true"><?= $icono('bus-front') ?></div><?php endif; ?>
         <div class="login-aside__copy">
             <span class="eyebrow eyebrow--light">SISTEMA DE ADMINISTRACIÓN</span>
             <h1>Control claro.<br> Gestión confiable.</h1>
@@ -15,7 +21,7 @@ require __DIR__ . '/partials/cabecera.php';
     </aside>
     <main class="login-main">
         <section class="login-card" aria-labelledby="login-title">
-            <span class="module-icon module-icon--mint"><?= $icono('shield-check') ?></span>
+            <div class="login-logo-slot" data-brand-slot="sfatsa"><span class="brand">SFATSA</span><span class="module-icon"><?= $icono('shield-check') ?></span></div>
             <span class="login-card__index">ACCESO SEGURO</span>
             <h2 id="login-title">Bienvenido</h2>
             <p class="login-card__intro">Ingrese sus credenciales para acceder a SFATSA.</p>

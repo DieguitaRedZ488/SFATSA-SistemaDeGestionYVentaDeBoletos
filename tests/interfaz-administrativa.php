@@ -107,6 +107,18 @@ try {
         [$cc, 11, 0, 'Confirmar deshabilitación'], [$vc, 11, 'INACTIVO', 'Confirmar deshabilitación']] as [$controller, $idEstado, $estado, $etiqueta]) {
         $respuesta = $controller->confirmarEstado(['id' => $idEstado, 'estado' => $estado]);
         $assert($respuesta->estado === 200 && str_contains($respuesta->cuerpo, $etiqueta));
+        $exportar(match (true) { $controller === $rc => 'rutas-estado', $controller === $pc => 'paradas-estado', $controller === $cc => 'conductores-estado', default => 'vehiculos-estado' }, $respuesta->cuerpo);
     }
+    foreach (['vehiculos-eliminar' => $vc->confirmarEliminacion(['id' => 11]), 'rutas-eliminar' => $rc->confirmarEliminacion(['id' => $ruta])] as $nombre => $respuesta) {
+        $assert($respuesta->estado === 200 && str_contains($respuesta->cuerpo, 'data-simple-confirm'));
+        $exportar($nombre, $respuesta->cuerpo);
+    }
+    $respuesta = $rc->revisar(['csrf' => $csrf->token(), 'codigo' => '', 'nombre' => '', 'id_tipo_servicio' => '', 'origen' => '', 'destino' => '']);
+    $assert($respuesta->estado === 422); $exportar('rutas-error', $respuesta->cuerpo);
+    $respuesta = $pc->registrar(['csrf' => $csrf->token(), 'nombre' => '', 'referencia' => '']);
+    $assert($respuesta->estado === 422); $exportar('paradas-error', $respuesta->cuerpo);
+    $respuesta = $rc->revisar(['csrf' => $csrf->token(), 'codigo' => 'UI-REVISAR', 'nombre' => 'Ruta ficticia para revisión', 'id_tipo_servicio' => 1, 'origen' => 1, 'destino' => 2]);
+    $assert($respuesta->estado === 200 && !str_contains($respuesta->cuerpo, 'data-simple-confirm'));
+    $exportar('rutas-confirmacion', $respuesta->cuerpo);
     echo "Interfaz administrativa: $checks comprobaciones correctas; HTML/controladores/datos ficticios, sin navegador ni MariaDB.\n";
 } catch (Throwable $e) { fwrite(STDERR, 'FALLO interfaz: ' . $e->getMessage() . "\n"); exit(1); }

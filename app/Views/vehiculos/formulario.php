@@ -25,7 +25,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
                     <legend class="field__label">Placa <span aria-hidden="true">*</span></legend>
                     <div data-placa-fallback>
                         <label class="visually-hidden" for="placa-valor">Placa completa</label>
-                        <input class="form-control field__control" id="placa-valor" name="placa" type="text" value="<?= $escapar($placaCapturada) ?>" required minlength="9" maxlength="9" pattern="[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+" autocapitalize="characters" spellcheck="false" aria-describedby="placa-ayuda<?= isset($errores['placa']) ? ' placa-error' : '' ?>">
+                        <input class="form-control field__control" id="placa-valor" name="placa" type="text" value="<?= $escapar($placaCapturada) ?>" required minlength="9" maxlength="9" pattern="[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+" autocapitalize="characters" spellcheck="false" aria-describedby="placa-ayuda<?= isset($errores['placa']) ? ' placa-error' : '' ?>"<?= isset($errores['placa']) ? ' aria-invalid="true"' : '' ?>>
                         <noscript><p class="field-help">Sin JavaScript, escriba la placa completa con sus dos guiones, por ejemplo ABC-123-A.</p></noscript>
                     </div>
                     <div class="placa-grupos" data-placa-grupos hidden>
@@ -33,7 +33,7 @@ require dirname(__DIR__) . '/partials/gestion-inicio.php';
                         <?php if ($indiceGrupo > 0): ?><span class="placa-separador" aria-hidden="true">-</span><?php endif; ?>
                         <div class="placa-grupo">
                             <label class="visually-hidden" for="placa-grupo-<?= $indiceGrupo + 1 ?>">Grupo <?= $indiceGrupo + 1 ?> de la placa</label>
-                            <input class="form-control field__control" id="placa-grupo-<?= $indiceGrupo + 1 ?>" type="text" value="<?= $escapar($valorGrupo) ?>" maxlength="7" pattern="[A-Z0-9]+" data-placa-grupo disabled autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="placa-ayuda placa-conteo placa-mensaje<?= isset($errores['placa']) ? ' placa-error' : '' ?>">
+                            <input class="form-control field__control" id="placa-grupo-<?= $indiceGrupo + 1 ?>" type="text" value="<?= $escapar($valorGrupo) ?>" maxlength="7" pattern="[A-Z0-9]+" data-placa-grupo disabled autocapitalize="characters" autocomplete="off" spellcheck="false" aria-describedby="placa-ayuda placa-conteo placa-mensaje<?= isset($errores['placa']) ? ' placa-error' : '' ?>"<?= isset($errores['placa']) ? ' aria-invalid="true"' : '' ?>>
                         </div>
                         <?php endforeach; ?>
                     </div>
