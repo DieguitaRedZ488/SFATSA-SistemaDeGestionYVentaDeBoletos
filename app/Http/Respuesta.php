@@ -18,7 +18,7 @@ final class Respuesta
     public static function redirigir(string $destino): self
     {
         if (!in_array($destino, ['/', '/?ruta=inicio', '/?ruta=usuarios', '/?ruta=conductores', '/?ruta=vehiculos',
-            '/?ruta=paradas', '/?ruta=tipos-servicio', '/?ruta=rutas'], true)) {
+            '/?ruta=paradas', '/?ruta=tipos-servicio', '/?ruta=rutas', '/?ruta=tarifas', '/?ruta=viajes'], true)) {
             throw new InvalidArgumentException('Destino de redirección no permitido.');
         }
         return new self('', 303, ['Location' => $destino]);

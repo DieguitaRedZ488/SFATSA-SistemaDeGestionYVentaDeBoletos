@@ -59,7 +59,13 @@ try {
     }
     $ruta = $_GET['ruta'] ?? 'login';
     $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-    if (is_string($ruta) && SFATSA\Http\IntegracionHU04::esRuta($ruta)) {
+    if (is_string($ruta) && SFATSA\Http\IntegracionSprint03::esRuta($ruta)) {
+        $respuesta = SFATSA\Http\IntegracionSprint03::atender($routes, $ruta, $metodo, $_GET, $_POST,
+            static fn (string $modulo) => SFATSA\Http\IntegracionSprint03::controlador(
+                $modulo, static fn () => $controller->usuarioActual(), $crearConexion, $csrf, $store
+            )
+        );
+    } elseif (is_string($ruta) && SFATSA\Http\IntegracionHU04::esRuta($ruta)) {
         $respuesta = SFATSA\Http\IntegracionHU04::atender($routes, $ruta, $metodo, $_GET, $_POST,
             static fn (string $modulo) => SFATSA\Http\IntegracionHU04::controlador(
                 $modulo, static fn () => $controller->usuarioActual(), $crearConexion, $csrf, $store,

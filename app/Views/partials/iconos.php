@@ -2,6 +2,8 @@
 // SVG locales de trazo uniforme: decorativos y acompañados siempre de texto.
 $icono = static function (string $nombre): string {
     $trazos = [
+        'ticket' => '<path d="M3 7h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V7Z"/><path d="M15 7v2m0 3v2m0 3v2"/>',
+        'clock' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
         'panel-left' => '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 3v18m5-12 3 3-3 3"/>',
         'x' => '<path d="m6 6 12 12M18 6 6 18"/>',
         'dashboard' => '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="11" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="18" width="7" height="3" rx="1"/>',

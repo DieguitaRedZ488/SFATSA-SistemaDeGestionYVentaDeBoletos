@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 // Se usan query routes porque Apache tiene AllowOverride None: no requiere reescrituras.
 return [
+    'tarifas' => ['GET' => ['tarifas', 'listar']],
+    'tarifas.registrar' => ['GET' => ['tarifas', 'nuevo'], 'POST' => ['tarifas', 'registrar']],
+    'tarifas.editar' => ['GET' => ['tarifas', 'editar'], 'POST' => ['tarifas', 'modificar']],
+    'viajes' => ['GET' => ['viajes', 'listar']],
+    'viajes.salida' => ['GET' => ['viajes', 'nuevo'], 'POST' => ['viajes', 'salir']],
+    'viajes.llegada' => ['GET' => ['viajes', 'confirmarLlegada'], 'POST' => ['viajes', 'llegar']],
+    'viajes.detalle' => ['GET' => ['viajes', 'detalle']],
     'login' => ['GET' => 'mostrarLogin', 'POST' => 'iniciarSesion'],
     'inicio' => ['GET' => 'inicio'],
     'logout' => ['POST' => 'cerrarSesion'],

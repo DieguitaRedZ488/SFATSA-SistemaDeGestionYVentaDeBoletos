@@ -15,6 +15,7 @@
         <script src="/assets/js/presentacion.js" defer></script>
     <?php endif; ?>
     <?php if ($scriptRutas ?? false): ?><script src="/assets/js/rutas.js" defer></script><?php endif; ?>
+    <?php if ($scriptOperacion ?? false): ?><script src="/assets/js/operacion-captura.js" defer></script><?php endif; ?>
     <?php if ($capturaPlacaVehiculo ?? false): ?>
         <link rel="stylesheet" href="/assets/css/vehiculos-placa.css">
         <script src="/assets/js/vehiculos-placa.js" defer></script>

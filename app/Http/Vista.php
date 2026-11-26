@@ -12,6 +12,7 @@ final class Vista
     public function renderizar(string $plantilla, array $datos = []): string
     {
         $permitidas = [
+            'tarifas/listado', 'tarifas/formulario', 'viajes/listado', 'viajes/salida', 'viajes/llegada', 'viajes/detalle',
             'login', 'inicio', 'mensaje', 'usuarios/listado', 'usuarios/formulario', 'usuarios/desactivar',
             'usuarios/activar', 'conductores/listado', 'conductores/formulario', 'conductores/estado',
         ];

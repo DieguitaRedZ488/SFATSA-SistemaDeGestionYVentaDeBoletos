@@ -12,5 +12,6 @@ Esta sección contiene guías públicas para instalar, entender y operar la impl
 - [Login MVC](general/login-mvc.md)
 - [Gestión de usuarios](general/gestion-usuarios.md)
 - [Gestión de conductores](general/gestion-conductores.md)
+- [Tarifas y control de viajes](general/tarifas-y-viajes.md)
 
 El [backlog oficial del Sprint 1](../02-documentacion-por-sprint/sprint-01/sprint-backlog.docx) se conserva en la documentación académica. Esta sección no incluye archivos privados de planificación o coordinación de agentes.

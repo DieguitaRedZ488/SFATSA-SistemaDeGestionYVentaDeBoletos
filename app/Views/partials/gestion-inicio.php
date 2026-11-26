@@ -4,6 +4,7 @@ $esAdministrador = $usuario->rol === 'ADMINISTRADOR';
 $esConductores = ($moduloGestion ?? 'usuarios') === 'conductores';
 $esVehiculos = ($moduloGestion ?? 'usuarios') === 'vehiculos';
 $esHU04 = isset(\SFATSA\Http\IntegracionHU04::PLANTILLAS[$moduloGestion ?? 'usuarios']);
+$esOperacion = in_array($moduloGestion ?? '', ['tarifas', 'viajes'], true);
 $rutasHU04Disponibles = \SFATSA\Http\IntegracionHU04::rutasDisponibles(require dirname(__DIR__, 3) . '/routes/web.php');
 $vehiculosDisponibles = true;
 foreach (['listado', 'formulario', 'confirmacion', 'estado', 'eliminar'] as $plantillaVehiculo) {
@@ -36,7 +37,7 @@ require __DIR__ . '/cabecera.php';
         <nav class="main-nav" aria-label="Navegación principal">
             <a class="nav-item<?= $esInicio ? ' active' : '' ?>" href="/?ruta=inicio"<?= $esInicio ? ' aria-current="page"' : '' ?>><?= $icono('dashboard') ?><span class="nav-text">Inicio</span><span class="nav-tooltip" aria-hidden="true">Inicio</span></a>
             <?php if ($esAdministrador): ?>
-            <a class="nav-item<?= !$esInicio && !$esConductores && !$esVehiculos && !$esHU04 ? ' active' : '' ?>" href="/?ruta=usuarios"<?= !$esInicio && !$esConductores && !$esVehiculos && !$esHU04 ? ' aria-current="page"' : '' ?>><?= $icono('users') ?><span class="nav-text">Usuarios</span><span class="nav-tooltip" aria-hidden="true">Usuarios</span></a>
+            <a class="nav-item<?= !$esInicio && !$esConductores && !$esVehiculos && !$esHU04 && !$esOperacion ? ' active' : '' ?>" href="/?ruta=usuarios"<?= !$esInicio && !$esConductores && !$esVehiculos && !$esHU04 && !$esOperacion ? ' aria-current="page"' : '' ?>><?= $icono('users') ?><span class="nav-text">Usuarios</span><span class="nav-tooltip" aria-hidden="true">Usuarios</span></a>
             <a class="nav-item<?= $esConductores ? ' active' : '' ?>" href="/?ruta=conductores"<?= $esConductores ? ' aria-current="page"' : '' ?>><?= $icono('contact-round') ?><span class="nav-text">Conductores</span><span class="nav-tooltip" aria-hidden="true">Conductores</span></a>
             <?php endif; ?>
             <?php if ($vehiculosDisponibles && $usuario->rol === 'ADMINISTRADOR'): ?>
@@ -47,13 +48,16 @@ require __DIR__ . '/cabecera.php';
             <a class="nav-item<?= $seleccionado ? ' active' : '' ?>" href="/?ruta=<?= $escapar($enlaceModulo) ?>"<?= $seleccionado ? ' aria-current="page"' : '' ?>><?= $icono($enlaceModulo === 'rutas' ? 'route' : 'map-pin') ?><span class="nav-text"><?= $escapar($etiquetaModulo) ?></span><span class="nav-tooltip" aria-hidden="true"><?= $escapar($etiquetaModulo) ?></span></a>
             <?php endforeach; ?>
             <?php endif; ?>
+            <?php foreach (['tarifas' => ['Tarifas', 'ticket', 'ADMINISTRADOR'], 'viajes' => ['Viajes', 'clock', 'CHECADORA']] as $enlace => [$etiqueta, $svg, $rol]): if ($usuario->rol !== $rol) { continue; } $seleccionado = ($moduloGestion ?? '') === $enlace; ?>
+            <a class="nav-item<?= $seleccionado ? ' active' : '' ?>" href="/?ruta=<?= $enlace ?>"<?= $seleccionado ? ' aria-current="page"' : '' ?>><?= $icono($svg) ?><span class="nav-text"><?= $etiqueta ?></span><span class="nav-tooltip" aria-hidden="true"><?= $etiqueta ?></span></a>
+            <?php endforeach; ?>
         </nav>
         <div class="sidebar-footer"><?= $icono('shield-check') ?><div><strong>SFATSA</strong><small>Gestión de transporte</small></div></div>
     </aside>
     <div class="nav-backdrop" data-nav-backdrop hidden aria-hidden="true"></div>
     <main class="app-main" id="contenido" tabindex="-1">
         <div class="page-heading">
-            <span class="module-icon"><?= $icono(['inicio' => 'dashboard', 'usuarios' => 'users', 'conductores' => 'contact-round', 'vehiculos' => 'bus-front', 'rutas' => 'route', 'paradas' => 'map-pin'][$moduloGestion ?? 'usuarios'] ?? 'dashboard') ?></span>
+            <span class="module-icon"><?= $icono(['inicio' => 'dashboard', 'usuarios' => 'users', 'conductores' => 'contact-round', 'vehiculos' => 'bus-front', 'rutas' => 'route', 'paradas' => 'map-pin', 'tarifas' => 'ticket', 'viajes' => 'clock'][$moduloGestion ?? 'usuarios'] ?? 'dashboard') ?></span>
             <div class="page-heading__copy"><span class="eyebrow"><?= $esAdministrador ? 'PANEL ADMINISTRATIVO' : 'MI ESPACIO' ?></span>
             <h1><?= $escapar($titulo) ?></h1>
             <p><?= $escapar($descripcion) ?></p></div>

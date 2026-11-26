@@ -45,6 +45,8 @@ require __DIR__ . '/partials/gestion-inicio.php';
     </section>
     <?php endforeach; ?>
     <?php endif; ?>
-    <?php if (!$puedeGestionar): ?><section class="card bienvenida-card dashboard-empty"><h2>Su sesión está lista</h2><p>Los módulos disponibles dependen de su perfil de acceso. No hay herramientas administrativas habilitadas para este perfil.</p></section><?php endif; ?>
+    <?php if ($puedeGestionar || $usuario->rol === 'CHECADORA'): $operacionInicio = $puedeGestionar ? 'tarifas' : 'viajes'; ?>
+    <section class="card desarrollo-card"><span class="module-icon"><?= $icono($puedeGestionar ? 'ticket' : 'clock') ?></span><h2><?= $puedeGestionar ? 'Gestión de tarifas' : 'Control de viajes' ?></h2><p><?= $puedeGestionar ? 'Registre precios por trayecto y administre sus vigencias.' : 'Registre salidas y llegadas de los recorridos.' ?></p><a class="btn button button--primary" href="/?ruta=<?= $operacionInicio ?>">Abrir módulo <?= $icono('arrow-right') ?></a></section>
+    <?php else: ?><section class="card bienvenida-card dashboard-empty"><h2>Su sesión está lista</h2><p>Los módulos disponibles dependen de su perfil de acceso. No hay herramientas administrativas habilitadas para este perfil.</p></section><?php endif; ?>
 </div>
 <?php require __DIR__ . '/partials/gestion-fin.php'; ?>
